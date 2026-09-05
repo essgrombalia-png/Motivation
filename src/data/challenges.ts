@@ -4,7 +4,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'health',
     label: 'Health',
-    icon: 'Heart',
+    icon: 'Activity',
     color: '#10b981',
     gradient: 'from-emerald-500 to-teal-600',
     badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
@@ -13,7 +13,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'fitness',
     label: 'Fitness',
-    icon: 'Flame',
+    icon: 'Dumbbell',
     color: '#f97316',
     gradient: 'from-orange-500 to-amber-600',
     badgeBg: 'bg-orange-500/15 text-orange-300 border-orange-500/30',
@@ -22,7 +22,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'mindset',
     label: 'Mindset',
-    icon: 'Compass',
+    icon: 'Brain',
     color: '#8b5cf6',
     gradient: 'from-violet-500 to-purple-600',
     badgeBg: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
@@ -31,7 +31,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'productivity',
     label: 'Productivity',
-    icon: 'Zap',
+    icon: 'Briefcase',
     color: '#3b82f6',
     gradient: 'from-blue-500 to-indigo-600',
     badgeBg: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
@@ -40,7 +40,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'learning',
     label: 'Learning',
-    icon: 'BookOpen',
+    icon: 'GraduationCap',
     color: '#06b6d4',
     gradient: 'from-cyan-500 to-blue-600',
     badgeBg: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
@@ -58,7 +58,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'discipline',
     label: 'Discipline',
-    icon: 'Shield',
+    icon: 'ShieldCheck',
     color: '#eab308',
     gradient: 'from-amber-500 to-yellow-600',
     badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
@@ -67,7 +67,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'finance',
     label: 'Finance',
-    icon: 'Coins',
+    icon: 'Wallet',
     color: '#14b8a6',
     gradient: 'from-teal-500 to-emerald-600',
     badgeBg: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
@@ -76,7 +76,7 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'self-care',
     label: 'Self-Care',
-    icon: 'Sparkles',
+    icon: 'Sun',
     color: '#a855f7',
     gradient: 'from-purple-500 to-fuchsia-600',
     badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',

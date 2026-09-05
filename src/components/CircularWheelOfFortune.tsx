@@ -2,15 +2,11 @@ import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import {
   RotateCw,
   Sparkles,
-  Flame,
-  Award,
-  Zap,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 import { SelectedPush, CategoryId } from '../types';
 import { CATEGORIES, CHALLENGES, DIFFICULTIES, DURATIONS, MOTIVATIONAL_QUOTES } from '../data/challenges';
 import { soundEngine } from '../utils/sound';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
 
 export interface FortuneWedge {
   id: string;
@@ -695,133 +691,78 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
 
   return (
     <div className="w-full flex flex-col items-center select-none">
-      {/* Visual Stage Container with authentic studio background and curved neon ribbon streamers */}
-      <div className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-b from-[#080e22] via-[#091535] to-[#040817] p-3 sm:p-7 border border-amber-400/25 shadow-[0_30px_100px_rgba(0,0,0,0.95)]">
-        {/* Curved Neon Light Streamers (Matching Image Background) */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {/* Top Blue-Violet Nebula Radial Glow */}
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-b from-blue-600/30 via-purple-600/20 to-transparent blur-3xl opacity-80" />
-
-          {/* Flowing Curved Ribbon Streamers SVG */}
-          <svg className="absolute inset-0 w-full h-full opacity-60" preserveAspectRatio="none" viewBox="0 0 1000 600">
-            {/* Ribbon 1: Cyan / Aqua */}
-            <path
-              d="M -100 120 C 200 40, 500 240, 1100 80"
-              fill="none"
-              stroke="#00E5FF"
-              strokeWidth="10"
-              strokeOpacity="0.4"
-            />
-            <path
-              d="M -100 120 C 200 40, 500 240, 1100 80"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="2.5"
-              strokeOpacity="0.7"
-            />
-
-            {/* Ribbon 2: Warm Gold */}
-            <path
-              d="M -100 220 C 300 140, 600 360, 1100 210"
-              fill="none"
-              stroke="#F59E0B"
-              strokeWidth="12"
-              strokeOpacity="0.45"
-            />
-            <path
-              d="M -100 220 C 300 140, 600 360, 1100 210"
-              fill="none"
-              stroke="#FEF08A"
-              strokeWidth="3"
-              strokeOpacity="0.8"
-            />
-
-            {/* Ribbon 3: Lime / Green Streamer */}
-            <path
-              d="M -100 440 C 300 380, 700 520, 1100 400"
-              fill="none"
-              stroke="#10B981"
-              strokeWidth="8"
-              strokeOpacity="0.35"
-            />
-
-            {/* Studio Floor Dotted Stage Grid */}
-            <pattern id="stageDots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="10" cy="10" r="1.5" fill="#38bdf8" opacity="0.18" />
-            </pattern>
-            <rect y="420" width="1000" height="180" fill="url(#stageDots)" />
-          </svg>
-        </div>
+      {/* Visual Stage Container: Architectural Obsidian & Slate */}
+      <div className="relative w-full rounded-3xl overflow-hidden bg-[#0c1222]/95 p-4 sm:p-7 border border-slate-800/90 shadow-[0_12px_48px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+        {/* Subtle Ambient Radial Backlight */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-architectural-grid opacity-30" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-amber-500/[0.04] blur-3xl pointer-events-none z-0" />
 
         {/* Top Header Information inside the Console */}
-        <div className="relative z-10 w-full flex items-center justify-between px-2 pb-3 mb-2 border-b border-white/[0.08] text-xs">
-          <div className="flex items-center gap-2.5">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400" />
-            </span>
-            <span className="font-mono uppercase tracking-[0.2em] text-[11px] sm:text-xs text-amber-300 font-extrabold">
-              DAILY PUSH WHEEL OF FORTUNE
+        <div className="relative z-10 w-full flex items-center justify-between px-2 pb-3 mb-2 border-b border-slate-800/80 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <span className="font-mono uppercase tracking-widest text-[11px] text-slate-300 font-semibold">
+              CHRONO-DISCIPLINE DIAL
             </span>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-[10px] text-slate-300">
+          <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
             <span className="hidden sm:inline-block tracking-wider">SWIPE WHEEL OR TAP SPIN</span>
-            <span className="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-200 border border-amber-400/30 font-bold tracking-wide">
+            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold tracking-wide">
               SPACE
             </span>
           </div>
         </div>
 
         {/* The Wheel Center Stage Area */}
-        <div className="relative z-10 w-full max-w-[620px] aspect-square mx-auto flex items-center justify-center my-1 sm:my-3">
-          {/* Top Selected Zone Intensifying Pulse Glow Aura & Beacons */}
+        <div className="relative z-10 w-full max-w-[600px] aspect-square mx-auto flex items-center justify-center my-2 sm:my-4">
+          {/* Radiant Motivational Spin Aura Glows */}
+          <div
+            className={`absolute inset-[-18px] sm:inset-[-26px] rounded-full pointer-events-none transition-all duration-700 z-0 ${
+              isSpinning
+                ? 'opacity-80 scale-105 shadow-[0_0_80px_rgba(245,158,11,0.35),0_0_120px_rgba(251,191,36,0.2)]'
+                : 'opacity-20 scale-100 shadow-[0_0_40px_rgba(245,158,11,0.1)]'
+            }`}
+            style={{
+              background: 'radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.15) 45%, transparent 70%)',
+            }}
+          />
+
+          {/* Dynamic Spinning Light Rays Overlay */}
           {isSpinning && (
-            <div className="absolute top-[-16px] sm:top-[-22px] left-1/2 -translate-x-1/2 z-35 pointer-events-none flex flex-col items-center">
-              {/* Expanding pulsating beacon rings */}
-              <div className="absolute top-1 w-12 h-12 -translate-x-1/2 left-1/2 rounded-full border-2 border-amber-400 animate-beacon-ring" />
-              <div
-                className="absolute top-1 w-12 h-12 -translate-x-1/2 left-1/2 rounded-full border-2 border-amber-300 animate-beacon-ring"
-                style={{ animationDelay: '0.4s' }}
-              />
-              {/* Downward focused energy spotlight cone directly into selected 12 o'clock wedge zone */}
-              <div className="w-24 sm:w-32 h-44 sm:h-56 bg-gradient-to-b from-amber-400/60 via-amber-300/30 to-transparent blur-md animate-pulse-glow-intense" />
-            </div>
+            <div
+              className="absolute inset-[-30px] rounded-full pointer-events-none animate-spin z-0 opacity-40"
+              style={{
+                animationDuration: '6s',
+                background: 'conic-gradient(from 0deg at 50% 50%, rgba(245,158,11,0.35) 0deg, transparent 60deg, rgba(251,191,36,0.3) 120deg, transparent 180deg, rgba(245,158,11,0.35) 240deg, transparent 300deg, rgba(251,191,36,0.3) 360deg)',
+                filter: 'blur(16px)',
+              }}
+            />
           )}
 
-          {/* Top Ticker Needle (The Authentic Spring Flapper) */}
+          {/* Top Ticker Needle (Machined Gold Precision Flapper with Glowing Jewel) */}
           <div
-            className="absolute top-[-8px] sm:top-[-12px] z-40 flex flex-col items-center pointer-events-none transition-transform duration-75"
+            className="absolute top-[-10px] sm:top-[-14px] z-40 flex flex-col items-center pointer-events-none transition-transform duration-75"
             style={{
               transform: `rotate(${tickerKicked ? '-22deg' : '0deg'})`,
-              transformOrigin: '50% 10px',
+              transformOrigin: '50% 12px',
             }}
           >
-            {/* Ticker Pin Top Mount with Intensified Pulse Glow */}
-            <div
-              className={`w-7 h-7 rounded-full bg-gradient-to-b from-[#FFF2A3] via-[#EAB308] to-[#854D0E] border-2 border-white flex items-center justify-center transition-all duration-200 ${
-                isSpinning
-                  ? 'shadow-[0_0_20px_rgba(245,158,11,1)] scale-110'
-                  : 'shadow-[0_4px_14px_rgba(0,0,0,0.9)]'
-              }`}
-            >
-              <div className="w-2.5 h-2.5 rounded-full bg-[#1b1202] border border-[#fef08a]" />
+            {/* Ticker Pin Top Mount with Specular Crown */}
+            <div className="w-8 h-8 rounded-full bg-gradient-to-b from-amber-100 via-amber-400 to-amber-700 border-2 border-amber-200 flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.85),0_0_12px_rgba(245,158,11,0.5)]">
+              <div className="w-3 h-3 rounded-full bg-amber-200 shadow-inner flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+              </div>
             </div>
 
-            {/* Ticker Downward Arrow / Flapper Blade with Gold Metallic Bevel */}
-            <div
-              className={`w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[34px] border-t-amber-400 -mt-1.5 transition-all duration-200 ${
-                isSpinning
-                  ? 'drop-shadow-[0_0_12px_rgba(245,158,11,0.95)]'
-                  : 'drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)]'
-              }`}
-            />
+            {/* Ticker Downward Arrow Pointer with Beveled Edge */}
+            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[36px] border-t-amber-400 -mt-1 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]" />
           </div>
 
           {/* Interactive Wheel Canvas */}
           <div
             ref={containerRef}
-            className="relative w-full h-full cursor-grab active:cursor-grabbing touch-none flex items-center justify-center"
+            className="relative w-full h-full cursor-grab active:cursor-grabbing touch-none flex items-center justify-center z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -830,7 +771,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
             <svg
               ref={wheelRef}
               viewBox="0 0 600 600"
-              className="w-full h-full max-w-[600px] drop-shadow-[0_25px_60px_rgba(0,0,0,0.95)]"
+              className="w-full h-full max-w-[600px]"
             >
               <defs>
                 {/* Dynamic Motion Blur Filter */}
@@ -838,63 +779,51 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   <feGaussianBlur in="SourceGraphic" stdDeviation={`${motionBlur.toFixed(2)} 0`} />
                 </filter>
 
-                {/* Selected Zone High-Energy Radial Glow */}
-                <radialGradient id="wfSelectedZoneApexGlow" cx="50%" cy="0%" r="100%">
-                  <stop offset="0%" stopColor="#FFFBEB" stopOpacity="0.85" />
-                  <stop offset="35%" stopColor="#F59E0B" stopOpacity="0.5" />
-                  <stop offset="70%" stopColor="#D97706" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                </radialGradient>
-
-                {/* 3D Gold Rim Outer Gradient */}
+                {/* Titanium / Slate Outer Rim Gradient */}
                 <linearGradient id="wfGoldOuterRim" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FFFCE6" />
-                  <stop offset="18%" stopColor="#FFE066" />
-                  <stop offset="38%" stopColor="#D97706" />
-                  <stop offset="65%" stopColor="#FEF08A" />
-                  <stop offset="85%" stopColor="#CA8A04" />
-                  <stop offset="100%" stopColor="#713F12" />
+                  <stop offset="0%" stopColor="#334155" />
+                  <stop offset="35%" stopColor="#1e293b" />
+                  <stop offset="70%" stopColor="#475569" />
+                  <stop offset="100%" stopColor="#0f172a" />
                 </linearGradient>
 
-                {/* 3D Gold Bevel Inner Track Gradient */}
+                {/* Champagne Gold Accent Bezel Gradient */}
                 <linearGradient id="wfGoldInnerBezel" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#451A03" />
-                  <stop offset="35%" stopColor="#B45309" />
-                  <stop offset="70%" stopColor="#FDE68A" />
-                  <stop offset="100%" stopColor="#78350F" />
+                  <stop offset="0%" stopColor="#78350f" />
+                  <stop offset="40%" stopColor="#d97706" />
+                  <stop offset="70%" stopColor="#fbbf24" />
+                  <stop offset="100%" stopColor="#92400e" />
                 </linearGradient>
 
-                {/* Center Badge Deep Blue Glitter Gradient */}
+                {/* Center Badge Slate Gradient */}
                 <linearGradient id="wfBadgeBlueGlitter" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#1e3a8a" />
-                  <stop offset="40%" stopColor="#0f172a" />
-                  <stop offset="100%" stopColor="#020617" />
+                  <stop offset="0%" stopColor="#1e293b" />
+                  <stop offset="60%" stopColor="#0f172a" />
+                  <stop offset="100%" stopColor="#090d16" />
                 </linearGradient>
 
                 {/* Center 3D Gold Extruded Letters Gradient */}
                 <linearGradient id="wfGold3DText" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#FFFFFF" />
-                  <stop offset="25%" stopColor="#FFF3A8" />
-                  <stop offset="60%" stopColor="#F59E0B" />
-                  <stop offset="90%" stopColor="#B45309" />
-                  <stop offset="100%" stopColor="#451A03" />
+                  <stop offset="0%" stopColor="#ffffff" />
+                  <stop offset="40%" stopColor="#fef08a" />
+                  <stop offset="80%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#b45309" />
                 </linearGradient>
 
-                {/* Chrome Stud Peg Gradient */}
+                {/* Rivet Peg Gradient */}
                 <radialGradient id="wfPegChrome" cx="30%" cy="30%" r="70%">
-                  <stop offset="0%" stopColor="#FFFFFF" />
-                  <stop offset="40%" stopColor="#FEF08A" />
-                  <stop offset="70%" stopColor="#D97706" />
-                  <stop offset="100%" stopColor="#291403" />
+                  <stop offset="0%" stopColor="#ffffff" />
+                  <stop offset="50%" stopColor="#94a3b8" />
+                  <stop offset="100%" stopColor="#334155" />
                 </radialGradient>
 
                 {/* Center Logo Drop Shadow */}
                 <filter id="wfBadgeShadow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000000" floodOpacity="0.9" />
+                  <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="#000000" floodOpacity="0.8" />
                 </filter>
               </defs>
 
-              {/* ROTATING WHEEL ASSEMBLY with Dynamic Motion Blur */}
+              {/* ROTATING WHEEL ASSEMBLY */}
               <g
                 transform={`rotate(${currentRotation} ${cx} ${cy})`}
                 style={{
@@ -908,18 +837,18 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                 {/* 24 Radial Slices */}
                 {slicePaths.map(({ wedge, pathData, midAngle }) => (
                   <g key={wedge.id}>
-                    {/* Wedge Shape with White Hairline Separator */}
+                    {/* Wedge Shape with Subtle Separator */}
                     <path
                       d={pathData}
                       fill={wedge.color}
-                      stroke="#ffffff"
+                      stroke="#0f172a"
                       strokeWidth="1.2"
-                      strokeOpacity="0.4"
+                      strokeOpacity="0.8"
                     />
 
                     {/* Radially Oriented Wedge Content along slice centerline */}
                     <g transform={`rotate(${midAngle - 90} ${cx} ${cy})`}>
-                      {/* Bold Point Value (Radially Placed on Outer Half) */}
+                      {/* Point Value (Radially Placed on Outer Half) */}
                       <text
                         x={cx + 188}
                         y={cy}
@@ -928,15 +857,15 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                         dominantBaseline="central"
                         style={{
                           fontFamily: 'Outfit, sans-serif',
-                          fontWeight: 900,
-                          fontSize: wedge.isSpecial ? '12px' : '17px',
-                          letterSpacing: '0.04em',
+                          fontWeight: 800,
+                          fontSize: wedge.isSpecial ? '12px' : '16px',
+                          letterSpacing: '0.02em',
                         }}
                       >
                         {wedge.pointsText}
                       </text>
 
-                      {/* Mini Action/Challenge Label Tag (Radially Placed on Inner Half) */}
+                      {/* Action/Challenge Label Tag (Radially Placed on Inner Half) */}
                       <text
                         x={cx + 114}
                         y={cy}
@@ -945,10 +874,10 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                         dominantBaseline="central"
                         style={{
                           fontFamily: 'Plus Jakarta Sans, sans-serif',
-                          fontWeight: 800,
+                          fontWeight: 700,
                           fontSize: '8.5px',
-                          letterSpacing: '0.06em',
-                          opacity: 0.95,
+                          letterSpacing: '0.04em',
+                          opacity: 0.9,
                         }}
                       >
                         {wedge.label}
@@ -964,7 +893,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   r={wedgeOuterRadius}
                   fill="none"
                   stroke="url(#wfGoldInnerBezel)"
-                  strokeWidth="5"
+                  strokeWidth="3.5"
                 />
 
                 {/* Recessed Dark Perimeter Peg Track */}
@@ -973,124 +902,72 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   cy={cy}
                   r={outerGoldTrackRadius}
                   fill="none"
-                  stroke="#111827"
+                  stroke="#0b0f19"
                   strokeWidth="20"
                 />
 
-                {/* Outermost Heavy 3D Gold Rim (Mirroring Wheel of Fortune image) */}
+                {/* Outermost Titanium / Slate Rim */}
                 <circle
                   cx={cx}
                   cy={cy}
                   r={outerGoldBezelRadius}
                   fill="none"
                   stroke="url(#wfGoldOuterRim)"
-                  strokeWidth="16"
+                  strokeWidth="14"
                 />
 
-                {/* Outer Black Accent Pinstripe */}
+                {/* Outer Bevel Thin Accent Ring */}
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={outerGoldBezelRadius + 9}
+                  r={outerGoldBezelRadius + 7}
                   fill="none"
-                  stroke="#000000"
-                  strokeWidth="2.5"
+                  stroke="#1e293b"
+                  strokeWidth="1.5"
                 />
 
-                {/* Specular Glint Stars on Outer Gold Rim (Subtle & Elegant) */}
-                <polygon
-                  points={`${cx - 170},${cy - 170} ${cx - 168},${cy - 164} ${cx - 162},${cy - 162} ${cx - 168},${cy - 160} ${cx - 170},${cy - 154} ${cx - 172},${cy - 160} ${cx - 178},${cy - 162} ${cx - 172},${cy - 164}`}
-                  fill="#FFFFFF"
-                  opacity="0.9"
-                />
-                <polygon
-                  points={`${cx + 170},${cy - 170} ${cx + 172},${cy - 164} ${cx + 178},${cy - 162} ${cx + 172},${cy - 160} ${cx + 170},${cy - 154} ${cx + 168},${cy - 160} ${cx + 162},${cy - 162} ${cx + 168},${cy - 164}`}
-                  fill="#FFFFFF"
-                  opacity="0.9"
-                />
-
-                {/* 24 Circumference Chrome/Gold Pegs */}
+                {/* 24 Circumference Rivets */}
                 {pegs.map((peg, idx) => (
                   <g key={idx}>
-                    {/* Peg Base Plate */}
                     <circle
                       cx={peg.x}
                       cy={peg.y}
-                      r="6.5"
-                      fill="#1e1b18"
-                      stroke="#ca8a04"
+                      r="5.5"
+                      fill="#0f172a"
+                      stroke="#475569"
                       strokeWidth="1"
                     />
-                    {/* Peg Shiny Chrome Stud */}
                     <circle
                       cx={peg.x}
                       cy={peg.y}
-                      r="4.5"
+                      r="3.5"
                       fill="url(#wfPegChrome)"
-                      stroke="#ffffff"
-                      strokeWidth="0.8"
                     />
                   </g>
                 ))}
               </g>
 
-              {/* SELECTED TARGET ZONE INTENSIFYING PULSE GLOW IN SVG */}
-              {isSpinning && (
-                <g className="pointer-events-none">
-                  {/* Concentrated Top Apex Target Arc Beam */}
-                  <path
-                    d="M 284 56 L 260 178 A 248 248 0 0 1 340 178 L 316 56 Z"
-                    fill="url(#wfSelectedZoneApexGlow)"
-                    className="animate-pulse-glow-intense"
-                  />
-                  {/* Outer Target Rim Highlighting Brackets */}
-                  <path
-                    d="M 270 54 A 248 248 0 0 1 330 54"
-                    fill="none"
-                    stroke="#FEF08A"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    className="animate-pulse"
-                  />
-                  {/* Dual Neon Calibrator Dots */}
-                  <circle cx="270" cy="54" r="3.5" fill="#FEF08A" className="animate-ping" />
-                  <circle cx="330" cy="54" r="3.5" fill="#FEF08A" className="animate-ping" />
-                </g>
-              )}
-
               {/* STATIC CENTER HUB EMBLEM */}
               <g transform={`translate(${cx}, ${cy})`}>
-                {/* Center Hub Outer Gold Bezel */}
+                {/* Center Hub Outer Ring */}
                 <circle
                   cx="0"
                   cy="0"
-                  r="56"
-                  fill="url(#wfGoldOuterRim)"
-                  stroke="#FFFBEB"
-                  strokeWidth="2.5"
+                  r="54"
+                  fill="url(#wfGoldInnerBezel)"
+                  stroke="#fde68a"
+                  strokeWidth="1.5"
                   filter="url(#wfBadgeShadow)"
                 />
 
-                {/* Center Hub Midnight-Blue Faceted Enamel Plate */}
+                {/* Center Hub Enamel Plate */}
                 <circle
                   cx="0"
                   cy="0"
-                  r="49"
+                  r="48"
                   fill="url(#wfBadgeBlueGlitter)"
-                  stroke="url(#wfGoldInnerBezel)"
-                  strokeWidth="2.5"
-                />
-
-                {/* Specular Star Highlights on Emblem */}
-                <polygon
-                  points="0,-40 1.5,-36 5.5,-34.5 1.5,-33 0,-29 -1.5,-33 -5.5,-34.5 -1.5,-36"
-                  fill="#FEF08A"
-                  opacity="0.85"
-                />
-                <polygon
-                  points="0,40 1.5,36 5.5,34.5 1.5,33 0,29 -1.5,33 -5.5,34.5 -1.5,36"
-                  fill="#FEF08A"
-                  opacity="0.85"
+                  stroke="#334155"
+                  strokeWidth="1.5"
                 />
 
                 {/* Top Word: DAILY */}
@@ -1102,33 +979,31 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   fill="url(#wfGold3DText)"
                   style={{
                     fontFamily: 'Outfit, sans-serif',
-                    fontWeight: 900,
-                    fontSize: '14px',
-                    letterSpacing: '0.12em',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.9))',
+                    fontWeight: 800,
+                    fontSize: '13px',
+                    letterSpacing: '0.14em',
                   }}
                 >
                   DAILY
                 </text>
 
-                {/* Center Crest Divider / Mini Star Hub */}
-                <circle cx="0" cy="0" r="3.5" fill="url(#wfGoldOuterRim)" stroke="#ffffff" strokeWidth="0.8" />
-                <line x1="-16" y1="0" x2="-6" y2="0" stroke="#fef08a" strokeWidth="1.2" strokeLinecap="round" />
-                <line x1="6" y1="0" x2="16" y2="0" stroke="#fef08a" strokeWidth="1.2" strokeLinecap="round" />
+                {/* Center Crest Divider */}
+                <circle cx="0" cy="0" r="3" fill="#f59e0b" />
+                <line x1="-16" y1="0" x2="-6" y2="0" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" />
+                <line x1="6" y1="0" x2="16" y2="0" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" />
 
                 {/* Bottom Word: PUSH */}
                 <text
                   x="0"
-                  y="16"
+                  y="15"
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="url(#wfGold3DText)"
                   style={{
                     fontFamily: 'Outfit, sans-serif',
                     fontWeight: 900,
-                    fontSize: '19px',
-                    letterSpacing: '0.08em',
-                    filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.95))',
+                    fontSize: '18px',
+                    letterSpacing: '0.1em',
                   }}
                 >
                   PUSH
@@ -1138,58 +1013,57 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
           </div>
         </div>
 
-        {/* Selected Wedge Information Badge with Intensifying Pulse Glow */}
-        <div
-          className={`relative z-10 w-full max-w-md mx-auto mt-1 px-4 py-2.5 rounded-2xl flex items-center justify-between transition-all duration-300 overflow-hidden ${
-            isSpinning
-              ? 'bg-amber-950/80 border-2 border-amber-400 shadow-[0_0_35px_rgba(245,158,11,0.65)] ring-2 ring-amber-400/40 animate-pulse-glow-intense'
-              : 'bg-black/60 border border-amber-400/25 shadow-lg'
-          }`}
-        >
-          {isSpinning && (
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-amber-300/35 to-transparent w-3/4 animate-laser-shimmer" />
-          )}
-          <div className="relative z-10 flex items-center gap-2.5 min-w-0">
-            <span
-              className={`w-3.5 h-3.5 rounded-full shrink-0 border border-white/50 transition-transform duration-200 ${
-                isSpinning ? 'scale-125 animate-pulse' : ''
-              }`}
-              style={{ backgroundColor: FORTUNE_WEDGES[selectedWedgeIndex].color }}
-            />
-            <span className="text-xs sm:text-sm font-display font-bold text-white uppercase tracking-wider truncate">
-              {isSpinning ? 'CALIBRATING SELECTION...' : FORTUNE_WEDGES[selectedWedgeIndex].label}
-            </span>
-          </div>
-          <span className="relative z-10 text-xs sm:text-sm font-mono font-extrabold text-amber-300 shrink-0 ml-2">
-            {isSpinning ? 'SPINNING' : `+${FORTUNE_WEDGES[selectedWedgeIndex].pointsText} XP`}
-          </span>
-        </div>
+        {/* Selected Wedge Information Badge */}
+        {(() => {
+          const currentWedge = FORTUNE_WEDGES[selectedWedgeIndex];
+          const wedgeCat = CATEGORIES.find((c) => c.id === currentWedge.categoryId);
+          const iconName = wedgeCat ? wedgeCat.icon : 'Sparkles';
+          return (
+            <div className="relative z-10 w-full max-w-md mx-auto mt-2 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="shrink-0">
+                  <RealisticIcon
+                    name={iconName}
+                    theme="gold"
+                    size="xs"
+                  />
+                </div>
+                <span className="text-xs sm:text-sm font-display font-bold text-slate-200 uppercase tracking-wide truncate">
+                  {isSpinning ? 'CALIBRATING WILLPOWER TARGET...' : currentWedge.label}
+                </span>
+              </div>
+              <span className="text-xs sm:text-sm font-mono font-bold text-amber-400 shrink-0 ml-2 px-2 py-0.5 rounded-lg bg-amber-400/10 border border-amber-400/25">
+                {isSpinning ? 'SPINNING' : `+${currentWedge.pointsText} XP`}
+              </span>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Main Tactile SPIN Button */}
-      <div className="mt-7 flex flex-col items-center">
+      <div className="mt-6 flex flex-col items-center">
         <button
           id="main-spin-button"
           onClick={handleSpin}
           disabled={isSpinning}
-          className={`relative group px-12 sm:px-16 py-4 sm:py-5 rounded-2xl font-display font-black text-lg sm:text-xl tracking-wider uppercase transition-all duration-300 shadow-2xl flex items-center gap-3.5 ${
+          className={`px-10 sm:px-16 py-3.5 sm:py-4 rounded-2xl font-display font-extrabold text-base sm:text-lg tracking-wide uppercase transition-all duration-200 flex items-center gap-3 active:scale-98 cursor-pointer ${
             isSpinning
-              ? 'bg-amber-600/80 text-amber-100 cursor-not-allowed opacity-90 scale-[0.98]'
-              : 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 text-slate-950 hover:scale-[1.03] active:scale-[0.97] shadow-[0_0_40px_rgba(245,158,11,0.4)] hover:shadow-[0_0_65px_rgba(245,158,11,0.7)]'
+              ? 'bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-700'
+              : 'bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-slate-950 hover:brightness-105 shadow-[0_4px_25px_rgba(245,158,11,0.35)]'
           }`}
         >
           <RotateCw
-            className={`w-6 h-6 stroke-[2.8] ${
-              isSpinning ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'
+            className={`w-5 h-5 ${
+              isSpinning ? 'animate-spin' : ''
             }`}
           />
-          <span className="tracking-wide">
-            {isSpinning ? 'SPINNING THE WHEEL...' : 'SPIN THE WHEEL'}
+          <span>
+            {isSpinning ? 'SPINNING...' : 'SPIN THE WHEEL'}
           </span>
         </button>
 
-        <p className="mt-3 text-xs text-slate-400 font-medium tracking-wide">
-          Press <span className="font-mono text-slate-300 font-semibold px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08]">SPACE</span> or swipe to spin
+        <p className="mt-2.5 text-xs text-slate-400 font-normal tracking-normal flex items-center gap-1.5">
+          Press <span className="font-mono text-slate-300 font-semibold px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[11px]">SPACE</span> or swipe to rotate
         </p>
       </div>
     </div>

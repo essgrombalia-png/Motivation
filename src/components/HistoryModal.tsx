@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
-  History,
-  Bookmark,
   Clock,
   Download,
   ChevronRight,
@@ -11,6 +9,7 @@ import {
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { CATEGORIES, CHALLENGES } from '../data/challenges';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -29,6 +28,19 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
 
   if (!isOpen) return null;
+
+  const categoryThemeMap: Record<string, RealisticIconTheme> = {
+    health: 'emerald',
+    fitness: 'amber',
+    mindset: 'amethyst',
+    productivity: 'sapphire',
+    learning: 'cyan',
+    social: 'rose',
+    discipline: 'gold',
+    finance: 'emerald',
+    'self-care': 'amethyst',
+    creativity: 'rose',
+  };
 
   const filteredHistory = profile.completedPushes.filter((p) => {
     if (selectedCategoryFilter === 'all') return true;
@@ -70,10 +82,8 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
 
           {/* Header & Tabs */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-400/10 border border-amber-400/25 text-amber-400">
-                <History className="w-5 h-5" />
-              </div>
+            <div className="flex items-center gap-3">
+              <RealisticIcon name="History" theme="sapphire" size="md" glow />
               <div>
                 <h2 className="text-xl sm:text-2xl font-display font-extrabold text-white">
                   Logbook & Favorites
@@ -94,27 +104,27 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
           </div>
 
           {/* Tab Selector */}
-          <div className="flex items-center gap-1.5 mb-4 p-1 rounded-2xl bg-black/50 border border-white/[0.08]">
+          <div className="flex items-center gap-1.5 mb-4 p-1 rounded-2xl bg-slate-950/80 border border-slate-800">
             <button
               onClick={() => setActiveTab('history')}
               className={`flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-display font-bold transition-all flex items-center justify-center gap-2 ${
                 activeTab === 'history'
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_2px_12px_rgba(245,158,11,0.3)]'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <History className="w-4 h-4" />
+              <RealisticIcon name="History" theme={activeTab === 'history' ? 'obsidian' : 'obsidian'} size="xs" />
               <span>Completed Log ({profile.completedPushes.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('favorites')}
               className={`flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-display font-bold transition-all flex items-center justify-center gap-2 ${
                 activeTab === 'favorites'
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_2px_12px_rgba(245,158,11,0.3)]'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Bookmark className="w-4 h-4" />
+              <RealisticIcon name="Bookmark" theme={activeTab === 'favorites' ? 'obsidian' : 'gold'} size="xs" />
               <span>Saved Favorites ({favoriteChallenges.length})</span>
             </button>
           </div>
@@ -129,7 +139,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                   className={`px-3 py-1 rounded-lg font-semibold shrink-0 border transition-all ${
                     selectedCategoryFilter === 'all'
                       ? 'bg-amber-400/20 text-amber-300 border-amber-400/40'
-                      : 'bg-black/40 text-slate-400 border-white/[0.06] hover:border-white/[0.12]'
+                      : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   All Categories
@@ -141,7 +151,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                     className={`px-2.5 py-1 rounded-lg font-semibold shrink-0 border transition-all ${
                       selectedCategoryFilter === c.id
                         ? 'bg-amber-400/20 text-amber-300 border-amber-400/40'
-                        : 'bg-black/40 text-slate-400 border-white/[0.06] hover:border-white/[0.12]'
+                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
                     }`}
                   >
                     {c.label}
@@ -152,13 +162,14 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
               {/* List */}
               <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
                 {filteredHistory.length === 0 ? (
-                  <div className="p-8 text-center text-slate-500 rounded-2xl bg-black/30 border border-white/[0.06] my-4">
+                  <div className="p-8 text-center text-slate-500 rounded-2xl bg-slate-950/40 border border-slate-800 my-4">
                     <p className="font-semibold text-sm text-slate-400">No completed pushes logged yet.</p>
-                    <p className="text-xs mt-1 text-slate-500">Spin the wheels and conquer your first daily challenge!</p>
+                    <p className="text-xs mt-1 text-slate-500">Spin the wheel and conquer your first daily challenge!</p>
                   </div>
                 ) : (
                   filteredHistory.map((item) => {
                     const catObj = CATEGORIES.find((c) => c.id === item.categoryId);
+                    const theme = catObj ? categoryThemeMap[catObj.id] || 'gold' : 'gold';
                     const formattedDate = new Date(item.completedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -169,18 +180,23 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                     return (
                       <div
                         key={item.id}
-                        className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] hover:border-white/[0.14] transition-all"
+                        className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-all"
                       >
                         <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <h4 className="text-sm font-display font-bold text-white leading-snug">
-                            {item.title}
-                          </h4>
+                          <div className="flex items-center gap-2.5">
+                            {catObj && (
+                              <RealisticIcon name={catObj.icon} theme={theme} size="xs" />
+                            )}
+                            <h4 className="text-sm font-display font-bold text-white leading-snug">
+                              {item.title}
+                            </h4>
+                          </div>
                           <span className="shrink-0 text-xs font-mono font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/25">
                             +{item.xpEarned} XP
                           </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400 ml-8">
                           {catObj && (
                             <span
                               className="font-semibold"
@@ -201,7 +217,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                         </div>
 
                         {item.reflectionNote && (
-                          <div className="mt-2.5 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-slate-300 italic flex items-start gap-2">
+                          <div className="mt-2.5 ml-8 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-slate-300 italic flex items-start gap-2">
                             <MessageSquare className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
                             <span>"{item.reflectionNote}"</span>
                           </div>
@@ -218,30 +234,34 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
           {activeTab === 'favorites' && (
             <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
               {favoriteChallenges.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 rounded-2xl bg-black/30 border border-white/[0.06] my-4">
-                  <Bookmark className="w-8 h-8 mx-auto mb-2 text-slate-600" />
-                  <p className="font-semibold text-sm text-slate-400">No saved favorite challenges yet.</p>
-                  <p className="text-xs mt-1 text-slate-500">Tap the bookmark icon on any challenge card to save it here for fast loading!</p>
+                <div className="p-8 text-center text-slate-500 rounded-2xl bg-slate-950/40 border border-slate-800 my-4 flex flex-col items-center">
+                  <RealisticIcon name="Bookmark" theme="gold" size="lg" />
+                  <p className="font-semibold text-sm text-slate-400 mt-3">No saved favorite challenges yet.</p>
+                  <p className="text-xs mt-1 text-slate-500">Tap the bookmark badge on any challenge card to save it here for fast loading!</p>
                 </div>
               ) : (
                 favoriteChallenges.map((ch) => {
                   const catObj = CATEGORIES.find((c) => c.id === ch.categoryId);
+                  const theme = catObj ? categoryThemeMap[catObj.id] || 'gold' : 'gold';
 
                   return (
                     <div
                       key={ch.id}
-                      className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] hover:border-white/[0.14] transition-all flex items-center justify-between gap-3"
+                      className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-all flex items-center justify-between gap-3"
                     >
-                      <div>
-                        <h4 className="text-sm font-display font-bold text-white">{ch.title}</h4>
-                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
-                          {catObj && (
-                            <span style={{ color: catObj.color }} className="font-semibold">
-                              {catObj.label}
-                            </span>
-                          )}
-                          <span>·</span>
-                          <span>{ch.impactTag}</span>
+                      <div className="flex items-center gap-3">
+                        {catObj && <RealisticIcon name={catObj.icon} theme={theme} size="sm" />}
+                        <div>
+                          <h4 className="text-sm font-display font-bold text-white">{ch.title}</h4>
+                          <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                            {catObj && (
+                              <span style={{ color: catObj.color }} className="font-semibold">
+                                {catObj.label}
+                              </span>
+                            )}
+                            <span>·</span>
+                            <span>{ch.impactTag}</span>
+                          </div>
                         </div>
                       </div>
 
@@ -251,7 +271,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                             onSelectFavoritePush(ch.id);
                             onClose();
                           }}
-                          className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center gap-1 shrink-0 transition-colors shadow-[0_0_10px_rgba(245,158,11,0.25)]"
+                          className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center gap-1 shrink-0 transition-colors shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
                         >
                           <span>Load Push</span>
                           <ChevronRight className="w-3.5 h-3.5" />

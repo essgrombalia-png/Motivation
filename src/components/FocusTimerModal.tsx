@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Play, Pause, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { soundEngine } from '../utils/sound';
+import { RealisticIcon } from './RealisticIcon';
 
 interface FocusTimerModalProps {
   isOpen: boolean;
@@ -85,9 +86,12 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             <X className="w-5 h-5" />
           </button>
 
-          <span className="text-[10px] font-mono font-bold tracking-[0.18em] uppercase text-amber-300 mb-1">
-            EXECUTIVE FOCUS CHRONOMETER
-          </span>
+          <div className="flex items-center gap-2 mb-2">
+            <RealisticIcon name="Timer" theme="gold" size="xs" glow />
+            <span className="text-[10px] font-mono font-bold tracking-[0.18em] uppercase text-amber-300">
+              EXECUTIVE FOCUS CHRONOMETER
+            </span>
+          </div>
 
           <h3 className="text-base sm:text-lg font-display font-bold text-white max-w-xs truncate mb-5">
             {challengeTitle}
@@ -156,9 +160,9 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             <button
               onClick={handleReset}
               title="Reset timer"
-              className="p-3.5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white border border-white/[0.08] transition-colors"
+              className="p-3 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white border border-white/[0.08] transition-colors"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RealisticIcon name="RotateCcw" theme="obsidian" size="xs" />
             </button>
 
             <button
@@ -166,11 +170,11 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 setIsRunning(!isRunning);
                 soundEngine.playTick(1.2);
               }}
-              className="flex-1 py-4 px-6 rounded-2xl font-display font-extrabold text-base bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all active:scale-[0.98]"
+              className="flex-1 py-3.5 px-6 rounded-2xl font-display font-extrabold text-base bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition-all active:scale-[0.98]"
             >
               {isRunning ? (
                 <>
-                  <Pause className="w-5 h-5" />
+                  <Pause className="w-5 h-5 fill-slate-950" />
                   <span>Pause Focus</span>
                 </>
               ) : (
@@ -187,9 +191,9 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 onClose();
               }}
               title="Finish & Claim XP"
-              className="p-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border border-emerald-300/60 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+              className="p-2 rounded-2xl transition-all active:scale-95"
             >
-              <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+              <RealisticIcon name="CheckCircle2" theme="emerald" size="sm" glow />
             </button>
           </div>
         </motion.div>

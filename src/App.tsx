@@ -32,6 +32,8 @@ import { AchievementsModal } from './components/AchievementsModal';
 import { HistoryModal } from './components/HistoryModal';
 import { PreferencesModal } from './components/PreferencesModal';
 import { MotivationEmergencyModal } from './components/MotivationEmergencyModal';
+import { MotivationDeck } from './components/MotivationDeck';
+import { DailyStreakTracker } from './components/DailyStreakTracker';
 import { CATEGORIES, CHALLENGES, DIFFICULTIES, DURATIONS, MOTIVATIONAL_QUOTES } from './data/challenges';
 
 export default function App() {
@@ -86,6 +88,38 @@ export default function App() {
       title: push.challenge.title,
       xp: result.xpEarned,
       leveledUp: result.leveledUp,
+    });
+
+    setTimeout(() => {
+      setCelebration(null);
+    }, 4500);
+  };
+
+  // Emergency SOS completion XP reward
+  const handleConquerEmergency = (xpGain: number) => {
+    const nextXp = profile.xp + xpGain;
+    const nextLevel = Math.floor(nextXp / 500) + 1;
+    const leveledUp = nextLevel > profile.level;
+    const updated = {
+      ...profile,
+      xp: nextXp,
+      level: nextLevel,
+    };
+    setProfile(updated);
+    saveProfile(updated);
+
+    setCelebration({
+      show: true,
+      title: 'Anti-Procrastination Shock Completed',
+      xp: xpGain,
+      leveledUp,
+    });
+
+    confetti({
+      particleCount: 60,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ['#ef4444', '#f59e0b', '#10b981'],
     });
 
     setTimeout(() => {
@@ -203,27 +237,31 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-[#e5e9f0] flex flex-col justify-between selection:bg-amber-400/25 selection:text-amber-100">
+    <div className="min-h-screen bg-[#070a12] text-[#e5e9f0] flex flex-col justify-between selection:bg-amber-400/25 selection:text-amber-100">
       {/* Background Subtle Gradient Glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[360px] bg-gradient-to-b from-amber-500/[0.08] via-orange-500/[0.03] to-transparent blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[450px] h-[300px] bg-blue-500/[0.03] blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[400px] bg-gradient-to-b from-amber-500/[0.12] via-orange-500/[0.05] to-transparent blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[550px] h-[350px] bg-blue-500/[0.04] blur-3xl" />
       </div>
 
       {/* Main App Container */}
-      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 py-4 sm:py-6">
-        {/* Motivational Greeting Banner */}
-        <div className="text-center mb-6 max-w-xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-display font-black text-white tracking-[-0.03em] leading-tight">
-            Spin Your Next Breakthrough.
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1.5 font-normal leading-relaxed">
-            Spin the wheel or swipe directly to select today’s high-impact micro-discipline.
-          </p>
-        </div>
+      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 py-4 sm:py-6 max-w-7xl mx-auto w-full">
+        {/* Dynamic Motivation & Command Deck */}
+        <MotivationDeck
+          profile={profile}
+          onOpenStats={() => setStatsOpen(true)}
+          onOpenAchievements={() => setAchievementsOpen(true)}
+          onOpenHistory={() => setHistoryOpen(true)}
+          onOpenPreferences={() => setPreferencesOpen(true)}
+          onOpenMotivationEmergency={() => setMotivationEmergencyOpen(true)}
+          onToggleSound={handleToggleSound}
+        />
+
+        {/* 7-Day Momentum Streak Tracker */}
+        <DailyStreakTracker profile={profile} />
 
         {/* The Main Roller Wheels Assembly */}
-        <main className="w-full flex-1 flex flex-col justify-center items-center">
+        <main className="w-full flex-1 flex flex-col justify-center items-center my-2">
           <WheelsContainer
             onChallengeSelected={handleChallengeSelected}
             isSpinning={isSpinning}
@@ -250,14 +288,14 @@ export default function App() {
         </main>
       </div>
 
-      {/* Footer Branding & Motivational Tagline */}
-      <footer className="relative z-10 w-full max-w-5xl mx-auto px-4 py-5 sm:py-6 mt-8 sm:mt-10 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between text-[10px] sm:text-[11px] text-slate-400 font-mono gap-2.5 sm:gap-3 text-center sm:text-left">
+      {/* Footer Branding & Metrics */}
+      <footer className="relative z-10 w-full max-w-5xl mx-auto px-4 py-5 mt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 font-mono gap-2.5 text-center sm:text-left">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)] shrink-0" />
-          <span className="tracking-wider">DAILY PUSH · PRECISION HABIT ARCHITECTURE</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+          <span className="tracking-wider text-slate-300">DAILY PUSH · MICRO-DISCIPLINE ENGINE</span>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
-          <span>{profile.completedPushes.length} Total Pushes</span>
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-slate-400">
+          <span>{profile.completedPushes.length} Completed</span>
           <span>·</span>
           <span>{profile.currentStreak} Day Streak</span>
           <span>·</span>
@@ -309,25 +347,25 @@ export default function App() {
       <MotivationEmergencyModal
         isOpen={motivationEmergencyOpen}
         onClose={() => setMotivationEmergencyOpen(false)}
-        onSelectEmergencyChallenge={handleSelectEmergencyChallenge}
+        onConquerEmergency={handleConquerEmergency}
       />
 
       {/* Floating Success Celebration Toast */}
       {celebration && celebration.show && (
-        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 animate-bounce sm:max-w-sm">
-          <div className="p-4 rounded-2xl bg-[#0d121f] text-white shadow-[0_15px_40px_rgba(0,0,0,0.85)] flex items-center gap-3.5 border border-emerald-400/40">
-            <div className="p-2.5 rounded-xl bg-emerald-500 text-slate-950 shadow-[0_0_12px_rgba(16,185,129,0.4)] shrink-0">
-              <CheckCircle2 className="w-6 h-6 stroke-[3]" />
+        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-sm transition-all duration-300">
+          <div className="p-4 rounded-xl bg-[#0f172a] text-white shadow-[0_8px_30px_rgba(0,0,0,0.7)] flex items-center gap-3.5 border border-slate-700/80">
+            <div className="p-2 rounded-lg bg-emerald-500 text-slate-950 shrink-0">
+              <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div className="min-w-0">
               <div className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-400">
-                {celebration.leveledUp ? '🔥 LEVEL UP CONQUERED!' : 'PUSH CONQUERED!'}
+                {celebration.leveledUp ? 'LEVEL UP!' : 'MISSION ACCOMPLISHED'}
               </div>
-              <div className="text-sm font-display font-extrabold text-white truncate">
+              <div className="text-sm font-display font-bold text-white truncate">
                 +{celebration.xp} XP Earned
               </div>
               {celebration.leveledUp && (
-                <div className="text-xs text-amber-300 font-semibold mt-0.5">
+                <div className="text-xs text-amber-300 font-medium mt-0.5">
                   Congratulations! You unlocked a new Rank!
                 </div>
               )}

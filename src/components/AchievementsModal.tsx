@@ -1,21 +1,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  Award,
-  Sparkles,
-  Flame,
-  Trophy,
-  Crown,
-  CheckCircle2,
-  Medal,
-  Layers,
-  Clock,
-  Lock,
-  Skull,
-} from 'lucide-react';
+import { X, Lock } from 'lucide-react';
 import { UserProfile } from '../types';
 import { ACHIEVEMENTS_DATA } from '../data/challenges';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
 
 interface AchievementsModalProps {
   isOpen: boolean;
@@ -31,6 +19,28 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
   if (!isOpen) return null;
 
   const unlockedCount = ACHIEVEMENTS_DATA.filter((ach) => ach.condition(profile)).length;
+
+  const getAchievementTheme = (iconName: string, isUnlocked: boolean): RealisticIconTheme => {
+    if (!isUnlocked) return 'obsidian';
+    switch (iconName) {
+      case 'Trophy':
+      case 'Crown':
+      case 'Medal':
+        return 'gold';
+      case 'Flame':
+        return 'amber';
+      case 'Skull':
+        return 'ruby';
+      case 'Sparkles':
+        return 'gold';
+      case 'Layers':
+        return 'sapphire';
+      case 'CheckCircle2':
+        return 'emerald';
+      default:
+        return 'gold';
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -51,10 +61,8 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
 
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-400/10 border border-amber-400/25 text-amber-400">
-                <Award className="w-5 h-5" />
-              </div>
+            <div className="flex items-center gap-3">
+              <RealisticIcon name="Trophy" theme="gold" size="md" glow />
               <div>
                 <h2 className="text-xl sm:text-2xl font-display font-extrabold text-white">
                   Milestones & Trophies
@@ -68,38 +76,28 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
           </div>
 
           {/* Achievements Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {ACHIEVEMENTS_DATA.map((ach) => {
               const isUnlocked = ach.condition(profile);
-
-              let IconComp = Award;
-              if (ach.icon === 'Sparkles') IconComp = Sparkles;
-              if (ach.icon === 'Flame') IconComp = Flame;
-              if (ach.icon === 'Trophy') IconComp = Trophy;
-              if (ach.icon === 'Crown') IconComp = Crown;
-              if (ach.icon === 'Skull') IconComp = Skull;
-              if (ach.icon === 'CheckCircle2') IconComp = CheckCircle2;
-              if (ach.icon === 'Medal') IconComp = Medal;
-              if (ach.icon === 'Layers') IconComp = Layers;
-              if (ach.icon === 'Clock') IconComp = Clock;
+              const theme = getAchievementTheme(ach.icon, isUnlocked);
 
               return (
                 <div
                   key={ach.id}
                   className={`p-4 rounded-2xl border transition-all flex items-start gap-3.5 ${
                     isUnlocked
-                      ? 'bg-gradient-to-br from-amber-400/[0.08] via-white/[0.02] to-transparent border-amber-400/35 shadow-[0_0_15px_rgba(245,158,11,0.08)]'
-                      : 'bg-black/40 border-white/[0.05] opacity-50'
+                      ? 'bg-gradient-to-br from-amber-400/[0.09] via-slate-900/60 to-slate-950/80 border-amber-400/35 shadow-[0_4px_16px_rgba(245,158,11,0.1)]'
+                      : 'bg-slate-950/40 border-white/[0.05] opacity-55'
                   }`}
                 >
-                  <div
-                    className={`p-2.5 rounded-xl shrink-0 ${
-                      isUnlocked
-                        ? 'bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
-                        : 'bg-white/[0.06] text-slate-500'
-                    }`}
-                  >
-                    {isUnlocked ? <IconComp className="w-5 h-5 stroke-[2.5]" /> : <Lock className="w-5 h-5" />}
+                  <div className="shrink-0">
+                    {isUnlocked ? (
+                      <RealisticIcon name={ach.icon} theme={theme} size="sm" glow />
+                    ) : (
+                      <div className="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 text-slate-500 flex items-center justify-center">
+                        <Lock className="w-4 h-4" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">

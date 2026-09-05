@@ -1,167 +1,238 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Zap, Flame, ArrowRight } from 'lucide-react';
+import {
+  Zap,
+  X,
+  Play,
+  Pause,
+  RotateCcw,
+  CheckCircle2,
+} from 'lucide-react';
 import { soundEngine } from '../utils/sound';
+import { RealisticIcon } from './RealisticIcon';
 
 interface MotivationEmergencyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectEmergencyChallenge: (title: string, categoryId: string) => void;
+  onConquerEmergency: (xpGain: number) => void;
 }
 
-const EMERGENCY_MANTRAS = [
+const EMERGENCY_PROTOCOLS = [
   {
-    quote: "You don't have to feel like it. Action precedes emotion.",
-    sub: "Motion creates emotion. Take physical action and your psychological state follows.",
-    author: "Psychological Law",
+    id: 'p1',
+    title: 'The 2-Minute Ignition Rule',
+    tagline: 'Defeat inertia instantly',
+    description:
+      'Commit to doing your hardest task for only 120 seconds. Once friction breaks, momentum takes over.',
+    durationSec: 120,
+    xpReward: 75,
   },
   {
-    quote: "The magic you're looking for is in the work you're avoiding.",
-    sub: "Lean directly into resistance. Discomfort is the exact compass to growth.",
-    author: "Universal Axiom",
+    id: 'p2',
+    title: 'Dopamine Shockwave',
+    tagline: 'Physical state shift',
+    description:
+      'Perform 15 fast jumping jacks or deep breaths + splash cold water on your face. Reset your nervous system right now.',
+    durationSec: 60,
+    xpReward: 50,
   },
   {
-    quote: "Nobody is coming to save you. It is entirely on you.",
-    sub: "Command your standard. One decisive choice in this exact second alters your trajectory.",
-    author: "Marcus Aurelius",
-  },
-  {
-    quote: "In 10 minutes, you can either be 10 minutes into the work, or still stuck in paralysis.",
-    sub: "Shrink the initial step until it is impossible to resist, then execute immediately.",
-    author: "Momentum Principle",
-  },
-];
-
-const EMERGENCY_MICRO_ACTIONS = [
-  {
-    id: 'e1',
-    title: '5-Minute Zero-Screen Walk',
-    cat: 'fitness',
-    desc: 'Step outside immediately without digital devices. Return refreshed in 5 minutes.',
-  },
-  {
-    id: 'e2',
-    title: 'Drop and hit 20 clean Push-ups',
-    cat: 'fitness',
-    desc: 'Flood your system with dopamine and oxygen to shatter mental inertia.',
-  },
-  {
-    id: 'e3',
-    title: '120-Second Ice Cold Water Splash',
-    cat: 'health',
-    desc: 'Trigger the mammalian dive reflex to reset your autonomic nervous system.',
-  },
-  {
-    id: 'e4',
-    title: 'Rapid Workspace Reset',
-    cat: 'productivity',
-    desc: 'Clear physical desktop clutter to immediately recover focus and order.',
+    id: 'p3',
+    title: 'Digital Clean Sweep',
+    tagline: 'Ruthless focus purge',
+    description:
+      'Close all irrelevant tabs, flip your phone face-down in another room, and write down 1 single victory task.',
+    durationSec: 90,
+    xpReward: 60,
   },
 ];
 
 export const MotivationEmergencyModal: React.FC<MotivationEmergencyModalProps> = ({
   isOpen,
   onClose,
-  onSelectEmergencyChallenge,
+  onConquerEmergency,
 }) => {
-  const [mantraIdx, setMantraIdx] = useState(0);
+  const [selectedProtocol, setSelectedProtocol] = useState(EMERGENCY_PROTOCOLS[0]);
+  const [secondsLeft, setSecondsLeft] = useState(selectedProtocol.durationSec);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  useEffect(() => {
+    setSecondsLeft(selectedProtocol.durationSec);
+    setIsRunning(false);
+    setIsCompleted(false);
+  }, [selectedProtocol]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isRunning && secondsLeft > 0) {
+      interval = setInterval(() => {
+        setSecondsLeft((prev) => {
+          if (prev <= 1) {
+            soundEngine.playLevelUp();
+            setIsRunning(false);
+            setIsCompleted(true);
+            return 0;
+          }
+          if (prev % 10 === 0) {
+            soundEngine.playTick(1.2);
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, secondsLeft]);
 
   if (!isOpen) return null;
 
-  const currentMantra = EMERGENCY_MANTRAS[mantraIdx];
+  const handleStart = () => {
+    soundEngine.playSpinStart();
+    setIsRunning(true);
+  };
 
-  const nextMantra = () => {
-    setMantraIdx((prev) => (prev + 1) % EMERGENCY_MANTRAS.length);
-    soundEngine.playTick(1.3);
+  const handlePause = () => {
+    soundEngine.playTick(0.8);
+    setIsRunning(false);
+  };
+
+  const handleReset = () => {
+    soundEngine.playTick(1.0);
+    setIsRunning(false);
+    setSecondsLeft(selectedProtocol.durationSec);
+    setIsCompleted(false);
+  };
+
+  const handleClaim = () => {
+    soundEngine.playCelebration();
+    onConquerEmergency(selectedProtocol.xpReward);
+    onClose();
+  };
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="relative w-full max-w-xl rounded-3xl bg-[#0d121f] p-6 sm:p-8 border border-red-500/35 shadow-[0_0_50px_rgba(239,68,68,0.2)] max-h-[90vh] overflow-y-auto"
+          exit={{ opacity: 0, scale: 0.92, y: 20 }}
+          className="relative w-full max-w-xl rounded-3xl bg-gradient-to-b from-[#160c0c] via-[#100808] to-[#080505] border-2 border-red-500/60 p-6 sm:p-8 shadow-[0_0_80px_rgba(239,68,68,0.4)] overflow-hidden"
         >
+          {/* Top Energy Ambient Glow */}
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-red-600/30 blur-3xl pointer-events-none" />
+
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white border border-white/[0.08] transition-colors"
+            className="absolute top-5 right-5 p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white border border-white/[0.1] transition-all"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Header */}
-          <div className="flex items-center gap-3 mb-2">
-            <span className="p-2.5 rounded-2xl bg-red-500/15 text-red-400 border border-red-500/30">
-              <Zap className="w-5 h-5 fill-red-400 text-red-400" />
-            </span>
+          <div className="flex items-center gap-3.5 mb-5">
+            <RealisticIcon name="Zap" theme="ruby" size="md" glow />
             <div>
-              <span className="text-[10px] font-mono font-bold tracking-[0.18em] text-red-400 uppercase">
-                EMERGENCY MOTIVATION PROTOCOL
-              </span>
-              <h2 className="text-xl sm:text-2xl font-display font-extrabold text-white">
-                Shatter Inertia
-              </h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-black uppercase tracking-widest text-red-400">
+                  ANTI-PROCRASTINATION SOS
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-extrabold border border-red-500/40">
+                  SHOCK PROTOCOL
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-white tracking-tight">
+                Break Inertia Right Now
+              </h3>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed">
-            Procrastination is a temporary biological feedback loop. Break friction with rapid physical intervention:
-          </p>
-
-          {/* Big Mantra Card */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-red-500/[0.08] via-black/40 to-transparent border border-red-500/30 mb-6 relative overflow-hidden">
-            <h3 className="text-lg sm:text-xl font-serif-quote italic text-white leading-snug mb-2">
-              "{currentMantra.quote}"
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mb-4">
-              {currentMantra.sub}
-            </p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-wider">
-                — {currentMantra.author}
-              </span>
+          {/* Protocol Selector Tabs */}
+          <div className="grid grid-cols-3 gap-2 mb-6">
+            {EMERGENCY_PROTOCOLS.map((proto) => (
               <button
-                onClick={nextMantra}
-                className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 font-semibold font-mono"
+                key={proto.id}
+                onClick={() => setSelectedProtocol(proto)}
+                className={`p-2.5 rounded-xl text-left border transition-all ${
+                  selectedProtocol.id === proto.id
+                    ? 'bg-red-500/20 border-red-500/70 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                    : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:bg-white/[0.08]'
+                }`}
               >
-                <span>Cycle Reframe</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Rapid Micro-Pushes */}
-          <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-slate-400 mb-3 flex items-center gap-2">
-            <Flame className="w-4 h-4 text-orange-400" />
-            SELECT 1 ZERO-FRICTION MICRO-PUSH IMMEDIATELY:
-          </h4>
-
-          <div className="space-y-2.5">
-            {EMERGENCY_MICRO_ACTIONS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onSelectEmergencyChallenge(item.title, item.cat);
-                  soundEngine.playTriumph();
-                  onClose();
-                }}
-                className="w-full text-left p-4 rounded-2xl bg-black/40 border border-white/[0.07] hover:border-red-500/50 hover:bg-red-500/[0.05] transition-all flex items-center justify-between gap-3 group"
-              >
-                <div>
-                  <div className="text-sm font-display font-bold text-white group-hover:text-red-300 transition-colors">
-                    {item.title}
-                  </div>
-                  <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
-                </div>
-                <div className="px-3.5 py-1.5 rounded-xl bg-red-500/15 text-red-300 text-xs font-mono font-bold border border-red-500/30 shrink-0 group-hover:bg-red-500 group-hover:text-slate-950 transition-all">
-                  Commit
+                <div className="text-[11px] font-bold truncate">{proto.title}</div>
+                <div className="text-[10px] font-mono text-red-300/80 mt-0.5 font-bold">
+                  {proto.durationSec}s · +{proto.xpReward} XP
                 </div>
               </button>
             ))}
           </div>
+
+          {/* Protocol Detail Box */}
+          <div className="p-4 rounded-2xl bg-black/60 border border-red-500/30 mb-6">
+            <h4 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+              <RealisticIcon name="Flame" theme="amber" size="xs" />
+              {selectedProtocol.tagline}
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {selectedProtocol.description}
+            </p>
+          </div>
+
+          {/* High Energy Emergency Timer */}
+          <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-red-950/40 to-black border border-red-500/40 mb-6 shadow-inner">
+            <div className="font-mono text-5xl sm:text-6xl font-black text-white tracking-wider drop-shadow-[0_0_25px_rgba(239,68,68,0.8)] mb-4">
+              {formatTime(secondsLeft)}
+            </div>
+
+            <div className="flex items-center gap-3">
+              {!isRunning ? (
+                <button
+                  onClick={handleStart}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white font-display font-black text-sm tracking-wider uppercase shadow-[0_0_25px_rgba(239,68,68,0.6)] flex items-center gap-2 active:scale-95 transition-all"
+                >
+                  <Play className="w-4 h-4 fill-white" />
+                  <span>{secondsLeft === selectedProtocol.durationSec ? 'Ignite Sprint' : 'Resume'}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handlePause}
+                  className="px-6 py-3 rounded-xl bg-white/[0.1] hover:bg-white/[0.15] text-white font-display font-bold text-sm tracking-wider uppercase border border-white/[0.2] flex items-center gap-2 active:scale-95 transition-all"
+                >
+                  <Pause className="w-4 h-4 fill-white" />
+                  <span>Pause</span>
+                </button>
+              )}
+
+              <button
+                onClick={handleReset}
+                title="Reset timer"
+                className="p-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 border border-white/[0.1] active:scale-95 transition-all"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Completion Claim Box */}
+          {isCompleted ? (
+            <button
+              onClick={handleClaim}
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-display font-black text-base uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.7)] flex items-center justify-center gap-2 animate-bounce transition-all"
+            >
+              <CheckCircle2 className="w-5 h-5 stroke-[3]" />
+              <span>Inertia Destroyed! Claim +{selectedProtocol.xpReward} XP</span>
+            </button>
+          ) : (
+            <p className="text-center text-[11px] font-mono text-slate-400">
+              "The secret of getting ahead is getting started." — Mark Twain
+            </p>
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

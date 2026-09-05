@@ -9,11 +9,14 @@ import {
   BookmarkCheck,
   Timer,
   Share2,
-  Flame,
-  MessageSquare,
   Check,
+  Zap,
+  ArrowRight,
+  MessageSquare,
+  Shield,
 } from 'lucide-react';
 import { SelectedPush } from '../types';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
 
 interface PushResultCardProps {
   push: SelectedPush | null;
@@ -57,138 +60,183 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
     }
   };
 
+  const categoryThemeMap: Record<string, RealisticIconTheme> = {
+    health: 'emerald',
+    fitness: 'amber',
+    mindset: 'amethyst',
+    productivity: 'sapphire',
+    learning: 'cyan',
+    social: 'rose',
+    discipline: 'gold',
+    finance: 'emerald',
+    'self-care': 'amethyst',
+    creativity: 'rose',
+  };
+
+  const difficultyThemeMap: Record<string, RealisticIconTheme> = {
+    easy: 'emerald',
+    medium: 'sapphire',
+    hard: 'amethyst',
+    beast: 'ruby',
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto mt-9">
+    <div className="w-full max-w-3xl mx-auto mt-8">
       <AnimatePresence mode="wait">
         {isSpinning ? (
           <motion.div
             key="spinning-placeholder"
-            initial={{ opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            className="p-10 rounded-3xl border border-white/[0.08] bg-[#0c101c]/60 backdrop-blur-xl flex flex-col items-center justify-center text-center min-h-[280px]"
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="p-10 rounded-2xl border border-slate-800 bg-[#0d1322]/80 backdrop-blur-xl flex flex-col items-center justify-center text-center min-h-[260px] shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
           >
-            <div className="relative mb-4">
-              <div className="w-12 h-12 rounded-full border-2 border-amber-400/20 border-t-amber-400 animate-spin" />
-              <Sparkles className="w-5 h-5 text-amber-400 absolute inset-0 m-auto animate-pulse" />
-            </div>
+            <div className="w-10 h-10 rounded-full border-2 border-slate-700 border-t-amber-400 animate-spin mb-4" />
             <h3 className="text-lg font-display font-bold text-white tracking-tight">
-              Calibrating Kinetic Drums...
+              Calibrating Mission...
             </h3>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xs leading-relaxed">
-              Selecting your high-impact micro-discipline for today.
+            <p className="text-xs text-slate-400 mt-1 max-w-xs font-normal">
+              Selecting your optimal micro-discipline challenge.
             </p>
           </motion.div>
         ) : (
           <motion.div
             key={push.id}
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            initial={{ opacity: 0, y: 12, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-gradient-to-b from-[#0f1422] via-[#0b0f19] to-[#080b11] p-6 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
+            transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+            className="relative overflow-hidden rounded-2xl border border-slate-800/90 bg-[#0d1322]/95 p-6 sm:p-8 shadow-[0_12px_36px_rgba(0,0,0,0.6)] backdrop-blur-xl"
           >
-            {/* Ambient Radial Accent Light */}
-            <div
-              className="absolute -top-16 -right-16 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none"
-              style={{ backgroundColor: push.category.color }}
-            />
-
             {/* Header / Sub-label & Bookmark */}
-            <div className="flex items-center justify-between gap-4 mb-5 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-mono font-bold tracking-[0.15em] uppercase bg-amber-400/10 text-amber-300 border border-amber-400/25">
-                  <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  TODAY'S PUSH
+            <div className="flex items-center justify-between gap-4 mb-4 relative z-10">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold tracking-wider uppercase bg-amber-400/10 text-amber-300 border border-amber-400/20">
+                  <RealisticIcon name="Shield" theme="gold" size="xs" />
+                  TODAY'S MISSION
                 </span>
 
                 {isCompletedToday && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                    Completed
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                    COMPLETED
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => onToggleFavorite(push.challenge.id)}
-                  title={isFavorite ? 'Remove from favorites' : 'Save to favorites'}
-                  className={`p-2.5 rounded-xl transition-all ${
+                  title={isFavorite ? 'Remove from saved' : 'Save mission'}
+                  className={`p-1.5 rounded-lg transition-all ${
                     isFavorite
-                      ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40'
-                      : 'bg-white/[0.05] hover:bg-white/[0.09] text-slate-400 hover:text-white border border-white/[0.08]'
+                      ? 'bg-amber-400/15 text-amber-300 border border-amber-400/30'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
                   }`}
                 >
-                  {isFavorite ? (
-                    <BookmarkCheck className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ) : (
-                    <Bookmark className="w-4 h-4" />
-                  )}
+                  <RealisticIcon
+                    name={isFavorite ? 'BookmarkCheck' : 'Bookmark'}
+                    theme={isFavorite ? 'gold' : 'obsidian'}
+                    size="xs"
+                  />
                 </button>
 
                 <button
                   onClick={handleShare}
-                  title="Share push challenge"
-                  className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] text-slate-400 hover:text-white border border-white/[0.08] transition-all"
+                  title="Share mission"
+                  className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-all"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+                  <RealisticIcon
+                    name={copied ? 'Check' : 'Share2'}
+                    theme={copied ? 'emerald' : 'obsidian'}
+                    size="xs"
+                  />
                 </button>
               </div>
             </div>
 
             {/* Main Action Title */}
-            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight leading-snug mb-3">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-white tracking-tight leading-snug mb-2.5">
               {push.challenge.title}
             </h2>
 
-            {/* Description / Instructions */}
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+            {/* Description */}
+            <p className="text-slate-300 text-sm sm:text-[15px] leading-relaxed mb-5 font-normal">
               {push.challenge.description}
             </p>
 
-            {/* Metadata Pills */}
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-7">
-              {/* Category Pill */}
+            {/* Metadata Badges with Realistic Icons */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-5">
+              {/* Category */}
               <div
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold border"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border bg-slate-900/80 shadow-inner"
                 style={{
-                  backgroundColor: `${push.category.color}15`,
-                  borderColor: `${push.category.color}35`,
-                  color: push.category.color,
+                  borderColor: `${push.category.color}40`,
+                  color: '#ffffff',
                 }}
               >
+                <RealisticIcon
+                  name={push.category.icon}
+                  theme={categoryThemeMap[push.category.id] || 'gold'}
+                  size="xs"
+                />
                 <span>{push.category.label}</span>
               </div>
 
-              {/* Difficulty Pill */}
+              {/* Difficulty */}
               <div
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold border bg-white/[0.04] ${push.difficulty.textColor} ${push.difficulty.borderColor}`}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border bg-slate-900/80 shadow-inner ${push.difficulty.textColor} ${push.difficulty.borderColor}`}
               >
+                <RealisticIcon
+                  name="Zap"
+                  theme={difficultyThemeMap[push.difficulty.id] || 'sapphire'}
+                  size="xs"
+                />
                 <span>{push.difficulty.label}</span>
               </div>
 
-              {/* Duration Pill */}
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/[0.04] border border-white/[0.08] text-slate-300">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
+              {/* Duration */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/80 border border-slate-800 text-slate-200 shadow-inner">
+                <RealisticIcon name="Clock" theme="titanium" size="xs" />
                 <span>{push.duration.label}</span>
               </div>
 
-              {/* XP Pill */}
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-400/10 border border-amber-400/30 text-amber-300">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              {/* XP */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-400/10 border border-amber-400/30 text-amber-300 shadow-inner">
+                <RealisticIcon name="Sparkles" theme="gold" size="xs" glow />
                 <span>+{push.totalXp} XP</span>
               </div>
             </div>
 
-            {/* Editorial Serif Motivational Quote Box */}
-            <div className="p-5 rounded-2xl bg-black/40 border border-white/[0.07] mb-7 relative">
-              <span className="text-3xl text-amber-400/30 font-serif leading-none absolute top-3 left-3">
-                “
-              </span>
-              <p className="font-serif-quote text-lg sm:text-xl text-slate-100 italic pl-5 pr-2 leading-relaxed">
-                {push.quote.text}
+            {/* 3-Step Action Blueprint */}
+            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/90 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-slate-300 shadow-inner">
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-md bg-slate-800 text-amber-400 border border-slate-700 font-mono font-bold flex items-center justify-center text-[10px] shadow-sm">
+                  1
+                </span>
+                <span>Prepare environment</span>
+              </div>
+              <ArrowRight className="w-3 h-3 text-slate-600 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-md bg-slate-800 text-amber-400 border border-slate-700 font-mono font-bold flex items-center justify-center text-[10px] shadow-sm">
+                  2
+                </span>
+                <span>Focus without distraction</span>
+              </div>
+              <ArrowRight className="w-3 h-3 text-slate-600 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold flex items-center justify-center text-[10px] shadow-sm">
+                  3
+                </span>
+                <span>Log win & compound streak</span>
+              </div>
+            </div>
+
+            {/* Quote Box */}
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/90 mb-5 relative shadow-inner">
+              <p className="font-serif-quote text-base sm:text-lg text-slate-200 italic leading-relaxed">
+                “{push.quote.text}”
               </p>
-              <div className="mt-2 text-right font-mono text-xs text-amber-400/90 font-medium tracking-wider uppercase">
+              <div className="mt-1.5 text-right font-mono text-[11px] text-amber-400 font-medium">
                 — {push.quote.author}
               </div>
             </div>
@@ -200,24 +248,24 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-5 overflow-hidden"
+                  className="mb-4 overflow-hidden"
                 >
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Personal Reflection:
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Victory Note:
                   </label>
                   <textarea
                     value={reflectionNote}
                     onChange={(e) => setReflectionNote(e.target.value)}
-                    placeholder="What friction did you overcome? How does completing this make you feel?"
+                    placeholder="Briefly describe how you overcame friction..."
                     rows={2}
-                    className="w-full rounded-xl bg-black/60 border border-white/[0.12] px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors resize-none"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 px-3 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400/60 transition-colors resize-none"
                   />
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Action Buttons Row */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-1">
               {/* Complete Challenge Button */}
               <button
                 id="complete-challenge-button"
@@ -227,14 +275,14 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
                   setReflectionOpen(false);
                 }}
                 disabled={isCompletedToday}
-                className={`flex-1 py-4 px-6 rounded-2xl font-display font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-lg ${
+                className={`flex-1 py-3 px-5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition-all ${
                   isCompletedToday
-                    ? 'bg-emerald-600/25 text-emerald-300 border border-emerald-500/40 cursor-default'
-                    : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 hover:shadow-[0_0_30px_rgba(16,185,129,0.45)] active:scale-[0.98]'
+                    ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 cursor-default'
+                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-[0_4px_16px_rgba(16,185,129,0.3)] active:scale-98'
                 }`}
               >
-                <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
-                <span>{isCompletedToday ? 'Challenge Completed!' : 'Complete Challenge'}</span>
+                <RealisticIcon name="CheckCircle2" theme="emerald" size="xs" />
+                <span>{isCompletedToday ? 'Mission Accomplished' : 'Conquer & Claim XP'}</span>
               </button>
 
               {/* Start Focus Timer */}
@@ -242,19 +290,19 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
                 id="start-timer-button"
                 onClick={() => onStartTimer(push.duration.minutes)}
                 title="Launch focus timer"
-                className="py-4 px-5 rounded-2xl font-semibold text-sm bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 border border-white/[0.09] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="py-3 px-4 rounded-xl font-display font-medium text-xs sm:text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 transition-all flex items-center justify-center gap-2 active:scale-98 shadow-sm"
               >
-                <Timer className="w-4 h-4 text-amber-400" />
-                <span>Start Timer</span>
+                <RealisticIcon name="Timer" theme="gold" size="xs" />
+                <span>Timer ({push.duration.minutes}m)</span>
               </button>
 
               {/* Spin Again */}
               <button
                 id="spin-again-button"
                 onClick={onSpinAgain}
-                className="py-4 px-5 rounded-2xl font-semibold text-sm bg-black/40 hover:bg-white/[0.06] text-slate-300 border border-white/[0.08] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="py-3 px-4 rounded-xl font-display font-medium text-xs sm:text-sm bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition-all flex items-center justify-center gap-2 active:scale-98 shadow-sm"
               >
-                <RotateCw className="w-4 h-4 text-slate-400" />
+                <RealisticIcon name="RotateCw" theme="obsidian" size="xs" />
                 <span>Spin Again</span>
               </button>
 
@@ -262,14 +310,14 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
               {!isCompletedToday && (
                 <button
                   onClick={() => setReflectionOpen(!reflectionOpen)}
-                  title="Add personal reflection notes"
-                  className={`p-4 rounded-2xl border transition-colors flex items-center justify-center ${
+                  title="Add note"
+                  className={`p-2.5 rounded-xl border transition-colors flex items-center justify-center ${
                     reflectionOpen
-                      ? 'bg-amber-400/20 text-amber-300 border-amber-400/50'
-                      : 'bg-black/40 text-slate-400 border-white/[0.08] hover:text-white hover:bg-white/[0.06]'
+                      ? 'bg-amber-400/10 text-amber-300 border-amber-400/30'
+                      : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white hover:bg-slate-800'
                   }`}
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <RealisticIcon name="MessageSquare" theme="titanium" size="xs" />
                 </button>
               )}
             </div>
@@ -279,3 +327,4 @@ export const PushResultCard: React.FC<PushResultCardProps> = ({
     </div>
   );
 };
+

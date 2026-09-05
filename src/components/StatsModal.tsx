@@ -1,18 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  Trophy,
-  Flame,
-  Zap,
-  Clock,
-  CheckCircle2,
-  BarChart3,
-  TrendingUp,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import { UserProfile } from '../types';
 import { calculateLevel, getTodayDateString } from '../utils/storage';
 import { CATEGORIES } from '../data/challenges';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
 
 interface StatsModalProps {
   isOpen: boolean;
@@ -55,6 +47,19 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
     categoryCounts[p.categoryId] = (categoryCounts[p.categoryId] || 0) + 1;
   });
 
+  const categoryThemeMap: Record<string, RealisticIconTheme> = {
+    health: 'emerald',
+    fitness: 'amber',
+    mindset: 'amethyst',
+    productivity: 'sapphire',
+    learning: 'cyan',
+    social: 'rose',
+    discipline: 'gold',
+    finance: 'emerald',
+    'self-care': 'amethyst',
+    creativity: 'rose',
+  };
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl overflow-y-auto">
@@ -74,9 +79,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
 
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 rounded-2xl bg-amber-400/10 border border-amber-400/25 text-amber-400">
-              <Trophy className="w-6 h-6" />
-            </div>
+            <RealisticIcon name="BarChart3" theme="emerald" size="md" glow />
             <div>
               <h2 className="text-xl sm:text-2xl font-display font-extrabold text-white">
                 Momentum & Discipline Analytics
@@ -86,15 +89,18 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
           </div>
 
           {/* Level & XP Hero Block */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-400/[0.08] via-white/[0.03] to-amber-400/[0.08] border border-amber-400/30 mb-6">
+          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-400/[0.09] via-slate-900/60 to-amber-400/[0.09] border border-amber-400/35 shadow-[0_4px_20px_rgba(245,158,11,0.12)] mb-6">
             <div className="flex items-center justify-between mb-3">
-              <div>
-                <span className="text-[10px] font-mono tracking-[0.16em] text-amber-300 font-bold uppercase">
-                  ACTIVE RANK
-                </span>
-                <h3 className="text-lg sm:text-xl font-display font-extrabold text-white">
-                  Level {levelInfo.level} · {levelInfo.title}
-                </h3>
+              <div className="flex items-center gap-3">
+                <RealisticIcon name="Crown" theme="gold" size="sm" />
+                <div>
+                  <span className="text-[10px] font-mono tracking-[0.16em] text-amber-300 font-bold uppercase">
+                    ACTIVE RANK
+                  </span>
+                  <h3 className="text-lg sm:text-xl font-display font-extrabold text-white">
+                    Level {levelInfo.level} · {levelInfo.title}
+                  </h3>
+                </div>
               </div>
               <div className="text-right font-mono">
                 <span className="text-lg sm:text-xl font-bold text-amber-300">
@@ -117,39 +123,39 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
             </div>
           </div>
 
-          {/* 4-Stat Grid */}
+          {/* 4-Stat Grid with Realistic Icons */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <div className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] flex flex-col">
-              <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase mb-1">
-                <Flame className="w-4 h-4 fill-amber-400" />
-                <span>Streak</span>
+            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col shadow-inner">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-amber-400">Streak</span>
+                <RealisticIcon name="Flame" theme="amber" size="xs" />
               </div>
               <span className="text-2xl font-display font-extrabold text-white">{profile.currentStreak} <span className="text-xs font-normal text-slate-400">days</span></span>
               <span className="text-[10px] text-slate-500 font-mono mt-1">Best: {profile.bestStreak} days</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] flex flex-col">
-              <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase mb-1">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Pushes</span>
+            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col shadow-inner">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-emerald-400">Pushes</span>
+                <RealisticIcon name="CheckCircle2" theme="emerald" size="xs" />
               </div>
               <span className="text-2xl font-display font-extrabold text-white">{totalCompleted}</span>
               <span className="text-[10px] text-slate-500 font-mono mt-1">Conquered</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] flex flex-col">
-              <div className="flex items-center gap-1.5 text-cyan-400 text-xs font-bold uppercase mb-1">
-                <Clock className="w-4 h-4" />
-                <span>Time Spent</span>
+            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col shadow-inner">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-cyan-400">Time Spent</span>
+                <RealisticIcon name="Clock" theme="cyan" size="xs" />
               </div>
               <span className="text-2xl font-display font-extrabold text-white">{totalMinutes} <span className="text-xs font-normal text-slate-400">min</span></span>
               <span className="text-[10px] text-slate-500 font-mono mt-1">Deep focus</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-black/40 border border-white/[0.07] flex flex-col">
-              <div className="flex items-center gap-1.5 text-purple-400 text-xs font-bold uppercase mb-1">
-                <Zap className="w-4 h-4" />
-                <span>Daily Avg</span>
+            <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col shadow-inner">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-purple-400">Daily Avg</span>
+                <RealisticIcon name="Zap" theme="amethyst" size="xs" />
               </div>
               <span className="text-2xl font-display font-extrabold text-white">
                 {profile.activeDates.length > 0
@@ -162,10 +168,10 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
           </div>
 
           {/* 7-Day Activity Rhythm */}
-          <div className="p-5 rounded-2xl bg-black/40 border border-white/[0.07] mb-6">
+          <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 mb-6 shadow-inner">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-amber-400" />
+                <RealisticIcon name="Activity" theme="gold" size="xs" />
                 <h4 className="text-sm font-bold text-white">7-Day Discipline Rhythm</h4>
               </div>
               <span className="text-[11px] text-slate-400 font-mono">XP Activity</span>
@@ -205,11 +211,11 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
           </div>
 
           {/* Category Mastery Distribution */}
-          <div className="p-5 rounded-2xl bg-black/40 border border-white/[0.07]">
-            <h4 className="text-sm font-bold text-white mb-3.5 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
-              Category Mastery Breakdown
-            </h4>
+          <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-inner">
+            <div className="flex items-center gap-2 mb-3.5">
+              <RealisticIcon name="TrendingUp" theme="emerald" size="xs" />
+              <h4 className="text-sm font-bold text-white">Category Mastery Breakdown</h4>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {CATEGORIES.map((cat) => {
@@ -219,12 +225,13 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, profile
                 return (
                   <div
                     key={cat.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-black/50 border border-white/[0.06]"
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: cat.color }}
+                      <RealisticIcon
+                        name={cat.icon}
+                        theme={categoryThemeMap[cat.id] || 'gold'}
+                        size="xs"
                       />
                       <span className="text-xs font-semibold text-slate-300">{cat.label}</span>
                     </div>
