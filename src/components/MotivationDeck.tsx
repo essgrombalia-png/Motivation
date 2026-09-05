@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Flame,
   Zap,
@@ -14,7 +14,47 @@ import {
 import { UserProfile } from '../types';
 import { MOTIVATIONAL_QUOTES } from '../data/challenges';
 import { soundEngine } from '../utils/sound';
-import { RealisticIcon } from './RealisticIcon';
+import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
+
+interface TimeGreeting {
+  title: string;
+  subtitle: string;
+  icon: string;
+  theme: RealisticIconTheme;
+}
+
+const getTimeGreeting = (): TimeGreeting => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return {
+      title: 'Morning Momentum',
+      subtitle: 'Ignite your daily drive',
+      icon: 'Sun',
+      theme: 'gold',
+    };
+  } else if (hour >= 12 && hour < 17) {
+    return {
+      title: 'Afternoon Hustle',
+      subtitle: 'Break through the resistance',
+      icon: 'Flame',
+      theme: 'amber',
+    };
+  } else if (hour >= 17 && hour < 22) {
+    return {
+      title: 'Evening Reflection',
+      subtitle: 'Compound your daily wins',
+      icon: 'Sparkles',
+      theme: 'amethyst',
+    };
+  } else {
+    return {
+      title: 'Night Vanguard',
+      subtitle: 'Deep focus & discipline',
+      icon: 'Shield',
+      theme: 'sapphire',
+    };
+  }
+};
 
 interface MotivationDeckProps {
   profile: UserProfile;
@@ -39,6 +79,15 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
     Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)
   );
   const [quoteAnimating, setQuoteAnimating] = useState(false);
+  const [greeting, setGreeting] = useState<TimeGreeting>(() => getTimeGreeting());
+
+  useEffect(() => {
+    setGreeting(getTimeGreeting());
+    const interval = setInterval(() => {
+      setGreeting(getTimeGreeting());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex] || MOTIVATIONAL_QUOTES[0];
 
@@ -75,9 +124,9 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
           
           {/* Left: Branding & Core Player Metrics */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 w-full lg:w-auto">
-            {/* App Icon & Badge */}
+            {/* App Icon & Badge with Personalized Time Greeting */}
             <div className="flex items-center gap-3">
-              <RealisticIcon name="Compass" theme="gold" size="sm" glow />
+              <RealisticIcon name={greeting.icon} theme={greeting.theme} size="sm" glow />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-display font-extrabold text-base text-white tracking-tight leading-none">
@@ -87,9 +136,13 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
                     PRO
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400 font-normal mt-0.5">
-                  Micro-Discipline Engine
-                </span>
+                {/* Dynamic Personalized Hour Greeting */}
+                <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium mt-0.5 text-amber-300/90">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <span className="font-semibold text-white tracking-tight">{greeting.title}</span>
+                  <span className="text-slate-600 hidden sm:inline">·</span>
+                  <span className="text-slate-400 font-sans hidden sm:inline text-[10px]">{greeting.subtitle}</span>
+                </div>
               </div>
             </div>
 

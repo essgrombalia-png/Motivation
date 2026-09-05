@@ -123,6 +123,38 @@
   }
 }
 
+@keyframes wheelBreatheSlow {
+  0%, 100% {
+    transform: scale(0.95) rotate(0deg);
+    opacity: 0.4;
+    filter: blur(40px);
+  }
+  50% {
+    transform: scale(1.08) rotate(180deg);
+    opacity: 0.75;
+    filter: blur(52px);
+  }
+}
+
+@keyframes wheelAuraPulse {
+  0%, 100% {
+    transform: scale(0.94);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+.animate-wheel-breathe {
+  animation: wheelBreatheSlow 8s ease-in-out infinite;
+}
+
+.animate-wheel-aura {
+  animation: wheelAuraPulse 6s ease-in-out infinite;
+}
+
 .animate-subtle-breath {
   animation: subtleBreath 4s ease-in-out infinite;
 }

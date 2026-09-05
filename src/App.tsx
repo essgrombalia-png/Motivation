@@ -25,7 +25,6 @@ import {
 } from './utils/storage';
 import { soundEngine } from './utils/sound';
 import { WheelsContainer } from './components/WheelsContainer';
-import { PushResultCard } from './components/PushResultCard';
 import { FocusTimerModal } from './components/FocusTimerModal';
 import { StatsModal } from './components/StatsModal';
 import { AchievementsModal } from './components/AchievementsModal';
@@ -33,13 +32,14 @@ import { HistoryModal } from './components/HistoryModal';
 import { PreferencesModal } from './components/PreferencesModal';
 import { MotivationEmergencyModal } from './components/MotivationEmergencyModal';
 import { MotivationDeck } from './components/MotivationDeck';
-import { DailyStreakTracker } from './components/DailyStreakTracker';
+import { PushNotificationOverlay } from './components/PushNotificationOverlay';
 import { CATEGORIES, CHALLENGES, DIFFICULTIES, DURATIONS, MOTIVATIONAL_QUOTES } from './data/challenges';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile>(() => loadProfile());
   const [selectedPush, setSelectedPush] = useState<SelectedPush | null>(null);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
 
   // Modals state
   const [timerOpen, setTimerOpen] = useState(false);
@@ -66,6 +66,7 @@ export default function App() {
   // Handle Challenge selection from wheels
   const handleChallengeSelected = useCallback((push: SelectedPush) => {
     setSelectedPush(push);
+    setNotificationOpen(true);
   }, []);
 
   // Complete Challenge action
@@ -179,6 +180,7 @@ export default function App() {
     };
 
     setSelectedPush(pushObj);
+    setNotificationOpen(true);
   };
 
   // Load Favorite from history modal
@@ -202,6 +204,7 @@ export default function App() {
     };
 
     setSelectedPush(pushObj);
+    setNotificationOpen(true);
   };
 
   // Sound toggle
@@ -257,51 +260,40 @@ export default function App() {
           onToggleSound={handleToggleSound}
         />
 
-        {/* 7-Day Momentum Streak Tracker */}
-        <DailyStreakTracker profile={profile} />
+        {/* The Main Wheel Stage with Floating Result Notification Card */}
+        <main className="relative w-full flex-1 flex flex-col justify-center items-center my-auto py-2">
+          <div className="relative w-full max-w-2xl flex items-center justify-center">
+            <WheelsContainer
+              onChallengeSelected={handleChallengeSelected}
+              isSpinning={isSpinning}
+              setIsSpinning={(spinning) => {
+                if (spinning) setNotificationOpen(false);
+                setIsSpinning(spinning);
+              }}
+              preferredCategories={profile.focusAreas}
+            />
 
-        {/* The Main Roller Wheels Assembly */}
-        <main className="w-full flex-1 flex flex-col justify-center items-center my-2">
-          <WheelsContainer
-            onChallengeSelected={handleChallengeSelected}
-            isSpinning={isSpinning}
-            setIsSpinning={setIsSpinning}
-            preferredCategories={profile.focusAreas}
-          />
-
-          {/* Today's Push Selected Card */}
-          <PushResultCard
-            push={selectedPush}
-            isSpinning={isSpinning}
-            onComplete={handleCompleteChallenge}
-            onSpinAgain={() => {
-              const spinBtn = document.getElementById('main-spin-button');
-              if (spinBtn) spinBtn.click();
-            }}
-            onStartTimer={handleStartTimer}
-            isFavorite={
-              selectedPush ? profile.favoriteChallengeIds.includes(selectedPush.challenge.id) : false
-            }
-            onToggleFavorite={handleToggleFavorite}
-            isCompletedToday={isCurrentPushCompleted}
-          />
+            {/* Floating Notification Card directly over the wheel */}
+            <PushNotificationOverlay
+              isOpen={notificationOpen && !isSpinning}
+              push={selectedPush}
+              onClose={() => setNotificationOpen(false)}
+              onComplete={handleCompleteChallenge}
+              onSpinAgain={() => {
+                setNotificationOpen(false);
+                const spinBtn = document.getElementById('main-spin-button');
+                if (spinBtn) spinBtn.click();
+              }}
+              onStartTimer={handleStartTimer}
+              isFavorite={
+                selectedPush ? profile.favoriteChallengeIds.includes(selectedPush.challenge.id) : false
+              }
+              onToggleFavorite={handleToggleFavorite}
+              isCompletedToday={isCurrentPushCompleted}
+            />
+          </div>
         </main>
       </div>
-
-      {/* Footer Branding & Metrics */}
-      <footer className="relative z-10 w-full max-w-5xl mx-auto px-4 py-5 mt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 font-mono gap-2.5 text-center sm:text-left">
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-          <span className="tracking-wider text-slate-300">DAILY PUSH · MICRO-DISCIPLINE ENGINE</span>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-slate-400">
-          <span>{profile.completedPushes.length} Completed</span>
-          <span>·</span>
-          <span>{profile.currentStreak} Day Streak</span>
-          <span>·</span>
-          <span>{profile.xp.toLocaleString()} Total XP</span>
-        </div>
-      </footer>
 
       {/* Modals */}
       <FocusTimerModal

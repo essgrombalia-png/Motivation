@@ -690,55 +690,46 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
   }, [sliceAngle, totalSlices]);
 
   return (
-    <div className="w-full flex flex-col items-center select-none">
-      {/* Visual Stage Container: Architectural Obsidian & Slate */}
-      <div className="relative w-full rounded-3xl overflow-hidden bg-[#0c1222]/95 p-4 sm:p-7 border border-slate-800/90 shadow-[0_12px_48px_rgba(0,0,0,0.6)] backdrop-blur-xl">
-        {/* Subtle Ambient Radial Backlight */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-architectural-grid opacity-30" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-amber-500/[0.04] blur-3xl pointer-events-none z-0" />
+    <div className="relative w-full max-w-[620px] mx-auto flex flex-col items-center select-none py-1">
+      {/* The Wheel Center Stage Area */}
+      <div className="relative w-full aspect-square mx-auto flex items-center justify-center my-2">
+        {/* Subtle Slow-Breathing Multi-Chromatic Gradient Layer */}
+        <div
+          className={`absolute inset-[-32px] sm:inset-[-48px] rounded-full pointer-events-none transition-all duration-1000 z-0 animate-wheel-breathe ${
+            isSpinning ? 'opacity-90 scale-110' : 'opacity-60 scale-100'
+          }`}
+          style={{
+            background:
+              'conic-gradient(from 0deg at 50% 50%, rgba(245, 158, 11, 0.35) 0deg, rgba(217, 119, 6, 0.18) 60deg, rgba(99, 102, 241, 0.25) 120deg, rgba(239, 68, 68, 0.2) 180deg, rgba(16, 185, 129, 0.22) 240deg, rgba(245, 158, 11, 0.35) 360deg)',
+            filter: 'blur(45px)',
+          }}
+        />
 
-        {/* Top Header Information inside the Console */}
-        <div className="relative z-10 w-full flex items-center justify-between px-2 pb-3 mb-2 border-b border-slate-800/80 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span className="font-mono uppercase tracking-widest text-[11px] text-slate-300 font-semibold">
-              CHRONO-DISCIPLINE DIAL
-            </span>
-          </div>
+        {/* Golden Willpower Hearth Inner Breathing Aura */}
+        <div
+          className={`absolute inset-[-18px] sm:inset-[-26px] rounded-full pointer-events-none transition-all duration-700 z-0 animate-wheel-aura ${
+            isSpinning
+              ? 'opacity-85 scale-105 shadow-[0_0_80px_rgba(245,158,11,0.4),0_0_120px_rgba(251,191,36,0.25)]'
+              : 'opacity-40 scale-100 shadow-[0_0_50px_rgba(245,158,11,0.15)]'
+          }`}
+          style={{
+            background:
+              'radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(217, 119, 6, 0.18) 45%, rgba(15, 23, 42, 0.1) 70%, transparent 85%)',
+          }}
+        />
 
-          <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
-            <span className="hidden sm:inline-block tracking-wider">SWIPE WHEEL OR TAP SPIN</span>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold tracking-wide">
-              SPACE
-            </span>
-          </div>
-        </div>
-
-        {/* The Wheel Center Stage Area */}
-        <div className="relative z-10 w-full max-w-[600px] aspect-square mx-auto flex items-center justify-center my-2 sm:my-4">
-          {/* Radiant Motivational Spin Aura Glows */}
+        {/* Dynamic Spinning Light Rays Overlay during active spin */}
+        {isSpinning && (
           <div
-            className={`absolute inset-[-18px] sm:inset-[-26px] rounded-full pointer-events-none transition-all duration-700 z-0 ${
-              isSpinning
-                ? 'opacity-80 scale-105 shadow-[0_0_80px_rgba(245,158,11,0.35),0_0_120px_rgba(251,191,36,0.2)]'
-                : 'opacity-20 scale-100 shadow-[0_0_40px_rgba(245,158,11,0.1)]'
-            }`}
+            className="absolute inset-[-30px] rounded-full pointer-events-none animate-spin z-0 opacity-40"
             style={{
-              background: 'radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.15) 45%, transparent 70%)',
+              animationDuration: '6s',
+              background:
+                'conic-gradient(from 0deg at 50% 50%, rgba(245,158,11,0.35) 0deg, transparent 60deg, rgba(251,191,36,0.3) 120deg, transparent 180deg, rgba(245,158,11,0.35) 240deg, transparent 300deg, rgba(251,191,36,0.3) 360deg)',
+              filter: 'blur(16px)',
             }}
           />
-
-          {/* Dynamic Spinning Light Rays Overlay */}
-          {isSpinning && (
-            <div
-              className="absolute inset-[-30px] rounded-full pointer-events-none animate-spin z-0 opacity-40"
-              style={{
-                animationDuration: '6s',
-                background: 'conic-gradient(from 0deg at 50% 50%, rgba(245,158,11,0.35) 0deg, transparent 60deg, rgba(251,191,36,0.3) 120deg, transparent 180deg, rgba(245,158,11,0.35) 240deg, transparent 300deg, rgba(251,191,36,0.3) 360deg)',
-                filter: 'blur(16px)',
-              }}
-            />
-          )}
+        )}
 
           {/* Top Ticker Needle (Machined Gold Precision Flapper with Glowing Jewel) */}
           <div
@@ -947,8 +938,40 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                 ))}
               </g>
 
-              {/* STATIC CENTER HUB EMBLEM */}
-              <g transform={`translate(${cx}, ${cy})`}>
+              {/* STATIC CENTER HUB EMBLEM (INTERACTIVE TACTILE SPIN TRIGGER) */}
+              <g
+                id="main-spin-button"
+                role="button"
+                tabIndex={0}
+                aria-label="Spin the wheel"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSpin();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSpin();
+                  }
+                }}
+                className={`cursor-pointer transition-all duration-200 outline-none select-none ${
+                  isSpinning
+                    ? 'opacity-90'
+                    : 'hover:scale-105 active:scale-95 filter hover:brightness-110 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                }`}
+                transform={`translate(${cx}, ${cy})`}
+              >
+                {/* Center Hub Outer Glow Halo on Hover */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="56"
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth="1.5"
+                  className="opacity-40 animate-pulse"
+                />
+
                 {/* Center Hub Outer Ring */}
                 <circle
                   cx="0"
@@ -982,6 +1005,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                     fontWeight: 800,
                     fontSize: '13px',
                     letterSpacing: '0.14em',
+                    pointerEvents: 'none',
                   }}
                 >
                   DAILY
@@ -992,7 +1016,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                 <line x1="-16" y1="0" x2="-6" y2="0" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" />
                 <line x1="6" y1="0" x2="16" y2="0" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" />
 
-                {/* Bottom Word: PUSH */}
+                {/* Bottom Word: PUSH / SPIN */}
                 <text
                   x="0"
                   y="15"
@@ -1002,70 +1026,17 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   style={{
                     fontFamily: 'Outfit, sans-serif',
                     fontWeight: 900,
-                    fontSize: '18px',
+                    fontSize: '17px',
                     letterSpacing: '0.1em',
+                    pointerEvents: 'none',
                   }}
                 >
-                  PUSH
+                  {isSpinning ? 'SPIN' : 'PUSH'}
                 </text>
               </g>
             </svg>
           </div>
         </div>
-
-        {/* Selected Wedge Information Badge */}
-        {(() => {
-          const currentWedge = FORTUNE_WEDGES[selectedWedgeIndex];
-          const wedgeCat = CATEGORIES.find((c) => c.id === currentWedge.categoryId);
-          const iconName = wedgeCat ? wedgeCat.icon : 'Sparkles';
-          return (
-            <div className="relative z-10 w-full max-w-md mx-auto mt-2 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="shrink-0">
-                  <RealisticIcon
-                    name={iconName}
-                    theme="gold"
-                    size="xs"
-                  />
-                </div>
-                <span className="text-xs sm:text-sm font-display font-bold text-slate-200 uppercase tracking-wide truncate">
-                  {isSpinning ? 'CALIBRATING WILLPOWER TARGET...' : currentWedge.label}
-                </span>
-              </div>
-              <span className="text-xs sm:text-sm font-mono font-bold text-amber-400 shrink-0 ml-2 px-2 py-0.5 rounded-lg bg-amber-400/10 border border-amber-400/25">
-                {isSpinning ? 'SPINNING' : `+${currentWedge.pointsText} XP`}
-              </span>
-            </div>
-          );
-        })()}
-      </div>
-
-      {/* Main Tactile SPIN Button */}
-      <div className="mt-6 flex flex-col items-center">
-        <button
-          id="main-spin-button"
-          onClick={handleSpin}
-          disabled={isSpinning}
-          className={`px-10 sm:px-16 py-3.5 sm:py-4 rounded-2xl font-display font-extrabold text-base sm:text-lg tracking-wide uppercase transition-all duration-200 flex items-center gap-3 active:scale-98 cursor-pointer ${
-            isSpinning
-              ? 'bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-700'
-              : 'bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-slate-950 hover:brightness-105 shadow-[0_4px_25px_rgba(245,158,11,0.35)]'
-          }`}
-        >
-          <RotateCw
-            className={`w-5 h-5 ${
-              isSpinning ? 'animate-spin' : ''
-            }`}
-          />
-          <span>
-            {isSpinning ? 'SPINNING...' : 'SPIN THE WHEEL'}
-          </span>
-        </button>
-
-        <p className="mt-2.5 text-xs text-slate-400 font-normal tracking-normal flex items-center gap-1.5">
-          Press <span className="font-mono text-slate-300 font-semibold px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[11px]">SPACE</span> or swipe to rotate
-        </p>
-      </div>
     </div>
   );
 };
