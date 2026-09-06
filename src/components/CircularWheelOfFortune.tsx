@@ -535,6 +535,15 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
   const lastAngle = useRef<number>(0);
   const lastTime = useRef<number>(0);
   const angularVelocity = useRef<number>(0);
+  const dragHistory = useRef<{ angle: number; time: number }[]>([]);
+  const lastDragPeg = useRef<number>(0);
+  const rafPending = useRef<boolean>(false);
+
+  // Helper to safely update motion blur without triggering WebKit filter re-compilation every frame
+  const updateMotionBlur = useCallback((rawBlur: number) => {
+    const quantized = rawBlur < 0.3 ? 0 : Math.round(rawBlur * 2) / 2;
+    setMotionBlur((prev) => (prev !== quantized ? quantized : prev));
+  }, []);
 
   const totalSlices = activeWedges.length; // 24
   const sliceAngle = 360 / totalSlices; // 15 degrees
@@ -637,12 +646,12 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
       // Subtle dynamic motion blur during rapid rotational velocity (fades cleanly as it stops)
       const remaining = 1 - progress;
       const blurLevel = remaining > 0.35 ? Math.min(2.4, remaining * 3.2) : remaining * 1.6;
-      setMotionBlur(blurLevel);
+      updateMotionBlur(blurLevel);
 
       // Check if passing peg for pointer click sound & flapper kick
       const currentPeg = Math.floor(currentDeg / sliceAngle);
       if (currentPeg !== lastPassedPeg) {
-        soundEngine.playTick(1.0 + ((currentPeg % 4) * 0.1));
+        soundEngine.playTick(1.0 + ((Math.abs(currentPeg) % 4) * 0.08));
         setTickerKicked(true);
         setTimeout(() => setTickerKicked(false), 45);
         lastPassedPeg = currentPeg;
@@ -652,7 +661,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
         requestAnimationFrame(animateSpin);
       } else {
         setCurrentRotation(finalTargetRotation);
-        setMotionBlur(0);
+        updateMotionBlur(0);
         setIsSpinning(false);
         setSelectedWedgeIndex(targetIdx);
 
@@ -676,9 +685,10 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
     currentRotation,
     onChallengeSelected,
     convertWedgeToPush,
+    updateMotionBlur,
   ]);
 
-  // Pointer drag to spin physics
+  // Pointer drag to spin physics with iPad touch optimizations
   const getAngleFromEvent = (e: React.PointerEvent) => {
     if (!containerRef.current) return 0;
     const rect = containerRef.current.getBoundingClientRect();
@@ -697,32 +707,55 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
     lastAngle.current = angle;
     lastTime.current = performance.now();
     angularVelocity.current = 0;
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    dragHistory.current = [{ angle, time: performance.now() }];
+    lastDragPeg.current = Math.floor(currentRotation / sliceAngle);
+
+    soundEngine.vibrate(10);
+
+    try {
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {}
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
     const now = performance.now();
     const angle = getAngleFromEvent(e);
+
+    // Keep sample history for recent 80ms to calculate smooth velocity on touch release
+    dragHistory.current.push({ angle, time: now });
+    dragHistory.current = dragHistory.current.filter((sample) => now - sample.time <= 80);
+
     let deltaAngle = angle - lastAngle.current;
     if (deltaAngle > 180) deltaAngle -= 360;
     if (deltaAngle < -180) deltaAngle += 360;
 
     const dt = Math.max(1, now - lastTime.current);
-    angularVelocity.current = deltaAngle / dt;
+    const instantV = deltaAngle / dt;
+    angularVelocity.current = angularVelocity.current * 0.5 + instantV * 0.5;
 
     const totalDelta = angle - dragStartAngle.current;
     const nextRotation = dragStartRotation.current + totalDelta;
-    setCurrentRotation(nextRotation);
+
+    if (!rafPending.current) {
+      rafPending.current = true;
+      requestAnimationFrame(() => {
+        setCurrentRotation(nextRotation);
+        rafPending.current = false;
+      });
+    }
+
+    // Only trigger tick audio and ticker flapper kick when passing peg boundary
+    const currentPeg = Math.floor(nextRotation / sliceAngle);
+    if (currentPeg !== lastDragPeg.current) {
+      soundEngine.playTick(1.0 + ((Math.abs(currentPeg) % 4) * 0.08));
+      setTickerKicked(true);
+      setTimeout(() => setTickerKicked(false), 35);
+      lastDragPeg.current = currentPeg;
+    }
 
     const speed = Math.abs(angularVelocity.current);
-    setMotionBlur(Math.min(1.8, speed * 1.5));
-
-    if (speed > 0.05) {
-      soundEngine.playTick(1.1);
-      setTickerKicked(true);
-      setTimeout(() => setTickerKicked(false), 40);
-    }
+    updateMotionBlur(Math.min(1.8, speed * 1.5));
 
     lastAngle.current = angle;
     lastTime.current = now;
@@ -735,17 +768,31 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
       (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
     } catch {}
 
-    const v = angularVelocity.current;
-    if (Math.abs(v) > 0.15) {
+    // Calculate rolling average velocity over recent drag history for smooth release inertia
+    const history = dragHistory.current;
+    let releaseV = angularVelocity.current;
+    if (history.length >= 2) {
+      const first = history[0];
+      const last = history[history.length - 1];
+      const totalDt = Math.max(1, last.time - first.time);
+      let dAngle = last.angle - first.angle;
+      if (dAngle > 180) dAngle -= 360;
+      if (dAngle < -180) dAngle += 360;
+      const historyV = dAngle / totalDt;
+      releaseV = historyV * 0.7 + angularVelocity.current * 0.3;
+    }
+
+    if (Math.abs(releaseV) > 0.12) {
       setIsSpinning(true);
-      const direction = v > 0 ? 1 : -1;
-      const spinSpeed = Math.min(2.5, Math.abs(v));
-      const extraDistance = direction * (spinSpeed * 1800 + Math.random() * 720);
+      const direction = releaseV > 0 ? 1 : -1;
+      const spinSpeed = Math.min(2.5, Math.abs(releaseV));
+      const extraDistance = direction * (spinSpeed * 1600 + Math.random() * 540);
       const targetRot = currentRotation + extraDistance;
 
       const startTime = performance.now();
       const startRot = currentRotation;
-      const duration = 2400 + Math.abs(v) * 1000;
+      const duration = 2200 + Math.abs(releaseV) * 900;
+      let lastPassedInertiaPeg = Math.floor(startRot / sliceAngle);
 
       const inertiaFrame = (now: number) => {
         const elapsed = now - startTime;
@@ -754,23 +801,33 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
         const currentDeg = startRot + (targetRot - startRot) * ease;
         setCurrentRotation(currentDeg);
 
+        // Check if passing peg during inertia spin for ticker sound & flapper kick
+        const currentPeg = Math.floor(currentDeg / sliceAngle);
+        if (currentPeg !== lastPassedInertiaPeg) {
+          soundEngine.playTick(1.0 + ((Math.abs(currentPeg) % 4) * 0.08));
+          setTickerKicked(true);
+          setTimeout(() => setTickerKicked(false), 40);
+          lastPassedInertiaPeg = currentPeg;
+        }
+
         const remaining = 1 - p;
-        setMotionBlur(remaining > 0.25 ? Math.min(2.0, remaining * 2.8) : 0);
+        updateMotionBlur(remaining > 0.25 ? Math.min(2.0, remaining * 2.8) : 0);
 
         if (p < 1) {
           requestAnimationFrame(inertiaFrame);
         } else {
-          setMotionBlur(0);
+          updateMotionBlur(0);
           setIsSpinning(false);
           const finalIdx = getIndexAtPointer(targetRot);
           setSelectedWedgeIndex(finalIdx);
           soundEngine.playLock(2);
+          soundEngine.vibrate([25, 20, 45]);
           onChallengeSelected(convertWedgeToPush(activeWedges[finalIdx]));
         }
       };
       requestAnimationFrame(inertiaFrame);
     } else {
-      setMotionBlur(0);
+      updateMotionBlur(0);
       const idx = getIndexAtPointer(currentRotation);
       setSelectedWedgeIndex(idx);
       // Trigger a spin when user taps/clicks the wheel instead of immediately firing notification
