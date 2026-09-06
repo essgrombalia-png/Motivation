@@ -368,11 +368,146 @@ export const FORTUNE_WEDGES: FortuneWedge[] = [
   },
 ];
 
+export function getAdaptedWedges(profile?: UserProfile): FortuneWedge[] {
+  const fitness = profile?.fitnessLevel || 'intermediate';
+  const role = (profile?.occupation || '').toLowerCase();
+  const userName = profile?.userName ? profile.userName.toUpperCase() : '';
+  const theme = profile?.wheelTheme || 'classic';
+
+  const NEON_PALETTE = [
+    { bg: '#00F0FF', text: '#001e2b' }, // Electric Cyan
+    { bg: '#FF0055', text: '#ffffff' }, // Cyber Pink
+    { bg: '#B000FF', text: '#ffffff' }, // Neon Purple
+    { bg: '#FFEE00', text: '#1f1a00' }, // Laser Yellow
+    { bg: '#00FF66', text: '#002910' }, // Electric Lime
+    { bg: '#FF5500', text: '#ffffff' }, // Vivid Orange
+    { bg: '#00D4FF', text: '#002233' }, // Bright Aqua
+    { bg: '#FF00AA', text: '#ffffff' }, // Deep Magenta
+  ];
+
+  const MINIMALIST_PALETTE = [
+    { bg: '#1e293b', text: '#f8fafc' }, // Slate 800
+    { bg: '#0f172a', text: '#e2e8f0' }, // Slate 900
+    { bg: '#27272a', text: '#f4f4f5' }, // Zinc 800
+    { bg: '#18181b', text: '#e4e4e7' }, // Zinc 900
+  ];
+
+  return FORTUNE_WEDGES.map((w, idx) => {
+    let title = w.challengeTitle;
+    let desc = w.challengeDesc;
+    let label = w.label;
+    let color = w.color;
+    let textColor = w.textColor;
+
+    // Apply Wheel Visual Theme Colors
+    if (theme === 'neon') {
+      if (w.isSpecial) {
+        color = '#FFFFFF';
+        textColor = '#000000';
+      } else {
+        const neonItem = NEON_PALETTE[idx % NEON_PALETTE.length];
+        color = neonItem.bg;
+        textColor = neonItem.text;
+      }
+    } else if (theme === 'minimalist') {
+      if (w.isSpecial) {
+        color = '#f59e0b'; // Gold accent for special wedge in minimalist
+        textColor = '#090d16';
+      } else {
+        const minItem = MINIMALIST_PALETTE[idx % MINIMALIST_PALETTE.length];
+        color = minItem.bg;
+        textColor = minItem.text;
+      }
+    }
+
+    // Adapt physical wedges based on fitness level
+    if (w.categoryId === 'fitness') {
+      if (fitness === 'beginner') {
+        if (w.id === 'w1') {
+          label = '10 WALL PUSH-UPS';
+          title = '10 Gentle Wall or Knee Push-ups';
+          desc = 'Focus on controlled form, deep breathing, and posture alignment.';
+        } else if (w.id === 'w12') {
+          label = 'PLANK 30 SEC';
+          title = '30-Second Forearm Plank';
+          desc = 'Engage your core gently and maintain steady, even breathing.';
+        } else if (w.id === 'w4') {
+          label = 'GENTLE STRETCH';
+          title = '10-Minute Full Body Stretch';
+          desc = 'Low-impact mobility to relieve joint tension and boost blood flow.';
+        }
+      } else if (fitness === 'advanced' || fitness === 'beast') {
+        if (w.id === 'w1') {
+          label = '30 PUSH-UPS';
+          title = '30 Explosive Push-ups';
+          desc = 'Full range of motion, chest to ground, relentless pace.';
+        } else if (w.id === 'w12') {
+          label = '2-MIN PLANK';
+          title = '2-Minute Unbroken Forearm Plank';
+          desc = 'Total body tension. Lock down your core and crush the time.';
+        } else if (w.id === 'w4') {
+          label = 'BEAST HIIT';
+          title = '15-Minute Beast HIIT Protocol';
+          desc = 'Maximum output, zero breaks. Burpees, squats, mountain climbers.';
+        }
+      }
+    }
+
+    // Adapt learning / productivity wedges based on occupation / role
+    if (w.categoryId === 'learning' || w.categoryId === 'productivity') {
+      if (role.includes('student') || role.includes('academic') || role.includes('learn')) {
+        if (w.id === 'w5') {
+          label = 'STUDY 10 PAGES';
+          title = 'Study 10 Pages or Active Recall';
+          desc = 'Absorb high-yield concepts and summarize main points from memory.';
+        } else if (w.id === 'w6') {
+          label = 'STUDY POMODORO';
+          title = '25-Minute Focused Study Session';
+          desc = 'Zero phone distractions. Dive deep into complex course material.';
+        }
+      } else if (
+        role.includes('engineer') ||
+        role.includes('developer') ||
+        role.includes('professional') ||
+        role.includes('entrepreneur') ||
+        role.includes('freelancer')
+      ) {
+        if (w.id === 'w6') {
+          label = 'DEEP WORK 25M';
+          title = '25-Minute Single-Task Deep Work Flow';
+          desc = 'Close slack, email, and social tabs. Execute core high-value task.';
+        } else if (w.id === 'w8') {
+          label = 'INBOX & DESK';
+          title = 'Clear Email Inbox & Workspace';
+          desc = 'Achieve inbox zero or declutter physical desk space.';
+        }
+      }
+    }
+
+    // Personalize title if user name is set
+    if (userName && w.isSpecial) {
+      desc = `${userName}'S SPECIAL MISSION: ${desc}`;
+    }
+
+    return {
+      ...w,
+      label,
+      color,
+      textColor,
+      challengeTitle: title,
+      challengeDesc: desc,
+    };
+  });
+}
+
+import { UserProfile } from '../types';
+
 interface CircularWheelOfFortuneProps {
   onChallengeSelected: (push: SelectedPush) => void;
   isSpinning: boolean;
   setIsSpinning: (val: boolean) => void;
   preferredCategories?: CategoryId[];
+  profile?: UserProfile;
 }
 
 export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
@@ -380,9 +515,13 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
   isSpinning,
   setIsSpinning,
   preferredCategories = [],
+  profile,
 }) => {
+  const theme = profile?.wheelTheme || 'classic';
   const wheelRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const activeWedges = useMemo(() => getAdaptedWedges(profile), [profile]);
 
   const [currentRotation, setCurrentRotation] = useState<number>(0);
   const [selectedWedgeIndex, setSelectedWedgeIndex] = useState<number>(0);
@@ -397,7 +536,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
   const lastTime = useRef<number>(0);
   const angularVelocity = useRef<number>(0);
 
-  const totalSlices = FORTUNE_WEDGES.length; // 24
+  const totalSlices = activeWedges.length; // 24
   const sliceAngle = 360 / totalSlices; // 15 degrees
 
   // Helper to convert wedge to SelectedPush
@@ -436,13 +575,11 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
     return idx;
   }, [sliceAngle, totalSlices]);
 
-  // Initial push emission
+  // Initial setup on mount (without emitting push before spin!)
   useEffect(() => {
     const initialIdx = getIndexAtPointer(0);
     setSelectedWedgeIndex(initialIdx);
-    onChallengeSelected(convertWedgeToPush(FORTUNE_WEDGES[initialIdx]));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getIndexAtPointer]);
 
   // Keyboard shortcut (Space to spin)
   useEffect(() => {
@@ -464,9 +601,9 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
     // Pick target wedge
     let targetIdx = Math.floor(Math.random() * totalSlices);
     if (preferredCategories.length > 0) {
-      const preferredIndices = FORTUNE_WEDGES.map((w, i) =>
-        preferredCategories.includes(w.categoryId as CategoryId) ? i : -1
-      ).filter((i) => i !== -1);
+      const preferredIndices = activeWedges
+        .map((w, i) => (preferredCategories.includes(w.categoryId as CategoryId) ? i : -1))
+        .filter((i) => i !== -1);
 
       if (preferredIndices.length > 0) {
         targetIdx = preferredIndices[Math.floor(Math.random() * preferredIndices.length)];
@@ -523,13 +660,23 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
         soundEngine.playLock(3);
         soundEngine.vibrate([30, 20, 50]);
 
-        const selectedWedge = FORTUNE_WEDGES[targetIdx];
+        const selectedWedge = activeWedges[targetIdx];
         onChallengeSelected(convertWedgeToPush(selectedWedge));
       }
     };
 
     requestAnimationFrame(animateSpin);
-  }, [isSpinning, setIsSpinning, totalSlices, preferredCategories, sliceAngle, currentRotation, onChallengeSelected, convertWedgeToPush]);
+  }, [
+    isSpinning,
+    setIsSpinning,
+    totalSlices,
+    preferredCategories,
+    activeWedges,
+    sliceAngle,
+    currentRotation,
+    onChallengeSelected,
+    convertWedgeToPush,
+  ]);
 
   // Pointer drag to spin physics
   const getAngleFromEvent = (e: React.PointerEvent) => {
@@ -618,7 +765,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
           const finalIdx = getIndexAtPointer(targetRot);
           setSelectedWedgeIndex(finalIdx);
           soundEngine.playLock(2);
-          onChallengeSelected(convertWedgeToPush(FORTUNE_WEDGES[finalIdx]));
+          onChallengeSelected(convertWedgeToPush(activeWedges[finalIdx]));
         }
       };
       requestAnimationFrame(inertiaFrame);
@@ -626,7 +773,8 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
       setMotionBlur(0);
       const idx = getIndexAtPointer(currentRotation);
       setSelectedWedgeIndex(idx);
-      onChallengeSelected(convertWedgeToPush(FORTUNE_WEDGES[idx]));
+      // Trigger a spin when user taps/clicks the wheel instead of immediately firing notification
+      handleSpin();
     }
   };
 
@@ -640,7 +788,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
 
   // Generate SVG slice paths
   const slicePaths = useMemo(() => {
-    return FORTUNE_WEDGES.map((wedge, i) => {
+    return activeWedges.map((wedge, i) => {
       const startDeg = i * sliceAngle;
       const endDeg = (i + 1) * sliceAngle;
       const startRad = ((startDeg - 90) * Math.PI) / 180;
@@ -700,21 +848,33 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
           }`}
           style={{
             background:
-              'conic-gradient(from 0deg at 50% 50%, rgba(245, 158, 11, 0.35) 0deg, rgba(217, 119, 6, 0.18) 60deg, rgba(99, 102, 241, 0.25) 120deg, rgba(239, 68, 68, 0.2) 180deg, rgba(16, 185, 129, 0.22) 240deg, rgba(245, 158, 11, 0.35) 360deg)',
+              theme === 'neon'
+                ? 'conic-gradient(from 0deg at 50% 50%, rgba(6, 182, 212, 0.45) 0deg, rgba(217, 70, 239, 0.35) 90deg, rgba(16, 185, 129, 0.35) 180deg, rgba(168, 85, 247, 0.4) 270deg, rgba(6, 182, 212, 0.45) 360deg)'
+                : theme === 'minimalist'
+                ? 'conic-gradient(from 0deg at 50% 50%, rgba(148, 163, 184, 0.18) 0deg, rgba(51, 65, 85, 0.1) 120deg, rgba(203, 213, 225, 0.15) 240deg, rgba(148, 163, 184, 0.18) 360deg)'
+                : 'conic-gradient(from 0deg at 50% 50%, rgba(245, 158, 11, 0.35) 0deg, rgba(217, 119, 6, 0.18) 60deg, rgba(99, 102, 241, 0.25) 120deg, rgba(239, 68, 68, 0.2) 180deg, rgba(16, 185, 129, 0.22) 240deg, rgba(245, 158, 11, 0.35) 360deg)',
             filter: 'blur(45px)',
           }}
         />
 
-        {/* Golden Willpower Hearth Inner Breathing Aura */}
+        {/* Golden / Cyber / Minimal Willpower Hearth Inner Breathing Aura */}
         <div
           className={`absolute inset-[-18px] sm:inset-[-26px] rounded-full pointer-events-none transition-all duration-700 z-0 animate-wheel-aura ${
             isSpinning
-              ? 'opacity-85 scale-105 shadow-[0_0_80px_rgba(245,158,11,0.4),0_0_120px_rgba(251,191,36,0.25)]'
+              ? theme === 'neon'
+                ? 'opacity-90 scale-105 shadow-[0_0_80px_rgba(6,182,212,0.5),0_0_120px_rgba(217,70,239,0.35)]'
+                : theme === 'minimalist'
+                ? 'opacity-60 scale-105 shadow-[0_0_60px_rgba(255,255,255,0.15)]'
+                : 'opacity-85 scale-105 shadow-[0_0_80px_rgba(245,158,11,0.4),0_0_120px_rgba(251,191,36,0.25)]'
               : 'opacity-40 scale-100 shadow-[0_0_50px_rgba(245,158,11,0.15)]'
           }`}
           style={{
             background:
-              'radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(217, 119, 6, 0.18) 45%, rgba(15, 23, 42, 0.1) 70%, transparent 85%)',
+              theme === 'neon'
+                ? 'radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, rgba(217, 70, 239, 0.22) 45%, rgba(15, 23, 42, 0.1) 70%, transparent 85%)'
+                : theme === 'minimalist'
+                ? 'radial-gradient(circle, rgba(203, 213, 225, 0.2) 0%, rgba(51, 65, 85, 0.1) 50%, transparent 85%)'
+                : 'radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(217, 119, 6, 0.18) 45%, rgba(15, 23, 42, 0.1) 70%, transparent 85%)',
           }}
         />
 
@@ -725,13 +885,17 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
             style={{
               animationDuration: '6s',
               background:
-                'conic-gradient(from 0deg at 50% 50%, rgba(245,158,11,0.35) 0deg, transparent 60deg, rgba(251,191,36,0.3) 120deg, transparent 180deg, rgba(245,158,11,0.35) 240deg, transparent 300deg, rgba(251,191,36,0.3) 360deg)',
+                theme === 'neon'
+                  ? 'conic-gradient(from 0deg at 50% 50%, rgba(6,182,212,0.4) 0deg, transparent 60deg, rgba(217,70,239,0.4) 120deg, transparent 180deg, rgba(6,182,212,0.4) 240deg, transparent 300deg, rgba(217,70,239,0.4) 360deg)'
+                  : theme === 'minimalist'
+                  ? 'conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.2) 0deg, transparent 90deg, rgba(255,255,255,0.2) 180deg, transparent 270deg, rgba(255,255,255,0.2) 360deg)'
+                  : 'conic-gradient(from 0deg at 50% 50%, rgba(245,158,11,0.35) 0deg, transparent 60deg, rgba(251,191,36,0.3) 120deg, transparent 180deg, rgba(245,158,11,0.35) 240deg, transparent 300deg, rgba(251,191,36,0.3) 360deg)',
               filter: 'blur(16px)',
             }}
           />
         )}
 
-          {/* Top Ticker Needle (Machined Gold Precision Flapper with Glowing Jewel) */}
+          {/* Top Ticker Needle (Machined Precision Flapper) */}
           <div
             className="absolute top-[-10px] sm:top-[-14px] z-40 flex flex-col items-center pointer-events-none transition-transform duration-75"
             style={{
@@ -740,14 +904,38 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
             }}
           >
             {/* Ticker Pin Top Mount with Specular Crown */}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-b from-amber-100 via-amber-400 to-amber-700 border-2 border-amber-200 flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.85),0_0_12px_rgba(245,158,11,0.5)]">
-              <div className="w-3 h-3 rounded-full bg-amber-200 shadow-inner flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            <div
+              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shadow-lg ${
+                theme === 'neon'
+                  ? 'bg-gradient-to-b from-cyan-100 via-cyan-400 to-fuchsia-600 border-cyan-200 shadow-[0_0_12px_rgba(6,182,212,0.8)]'
+                  : theme === 'minimalist'
+                  ? 'bg-gradient-to-b from-slate-100 via-slate-300 to-zinc-600 border-slate-300'
+                  : 'bg-gradient-to-b from-amber-100 via-amber-400 to-amber-700 border-amber-200 shadow-[0_0_12px_rgba(245,158,11,0.5)]'
+              }`}
+            >
+              <div
+                className={`w-3 h-3 rounded-full shadow-inner flex items-center justify-center ${
+                  theme === 'neon' ? 'bg-cyan-200' : theme === 'minimalist' ? 'bg-slate-200' : 'bg-amber-200'
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    theme === 'neon' ? 'bg-fuchsia-600' : theme === 'minimalist' ? 'bg-zinc-800' : 'bg-amber-600'
+                  }`}
+                />
               </div>
             </div>
 
             {/* Ticker Downward Arrow Pointer with Beveled Edge */}
-            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[36px] border-t-amber-400 -mt-1 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]" />
+            <div
+              className={`w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[36px] -mt-1 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] ${
+                theme === 'neon'
+                  ? 'border-t-cyan-400'
+                  : theme === 'minimalist'
+                  ? 'border-t-slate-200'
+                  : 'border-t-amber-400'
+              }`}
+            />
           </div>
 
           {/* Interactive Wheel Canvas */}
@@ -770,35 +958,97 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   <feGaussianBlur in="SourceGraphic" stdDeviation={`${motionBlur.toFixed(2)} 0`} />
                 </filter>
 
-                {/* Titanium / Slate Outer Rim Gradient */}
+                {/* Outer Rim Gradient */}
                 <linearGradient id="wfGoldOuterRim" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#334155" />
-                  <stop offset="35%" stopColor="#1e293b" />
-                  <stop offset="70%" stopColor="#475569" />
-                  <stop offset="100%" stopColor="#0f172a" />
+                  {theme === 'neon' ? (
+                    <>
+                      <stop offset="0%" stopColor="#0891b2" />
+                      <stop offset="50%" stopColor="#c026d3" />
+                      <stop offset="100%" stopColor="#0f172a" />
+                    </>
+                  ) : theme === 'minimalist' ? (
+                    <>
+                      <stop offset="0%" stopColor="#475569" />
+                      <stop offset="50%" stopColor="#1e293b" />
+                      <stop offset="100%" stopColor="#0f172a" />
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="#334155" />
+                      <stop offset="35%" stopColor="#1e293b" />
+                      <stop offset="70%" stopColor="#475569" />
+                      <stop offset="100%" stopColor="#0f172a" />
+                    </>
+                  )}
                 </linearGradient>
 
-                {/* Champagne Gold Accent Bezel Gradient */}
+                {/* Inner Accent Bezel Gradient */}
                 <linearGradient id="wfGoldInnerBezel" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#78350f" />
-                  <stop offset="40%" stopColor="#d97706" />
-                  <stop offset="70%" stopColor="#fbbf24" />
-                  <stop offset="100%" stopColor="#92400e" />
+                  {theme === 'neon' ? (
+                    <>
+                      <stop offset="0%" stopColor="#0891b2" />
+                      <stop offset="50%" stopColor="#06b6d4" />
+                      <stop offset="100%" stopColor="#22d3ee" />
+                    </>
+                  ) : theme === 'minimalist' ? (
+                    <>
+                      <stop offset="0%" stopColor="#334155" />
+                      <stop offset="50%" stopColor="#64748b" />
+                      <stop offset="100%" stopColor="#cbd5e1" />
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="#78350f" />
+                      <stop offset="40%" stopColor="#d97706" />
+                      <stop offset="70%" stopColor="#fbbf24" />
+                      <stop offset="100%" stopColor="#92400e" />
+                    </>
+                  )}
                 </linearGradient>
 
-                {/* Center Badge Slate Gradient */}
+                {/* Center Badge Slate/Obsidian Gradient */}
                 <linearGradient id="wfBadgeBlueGlitter" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#1e293b" />
-                  <stop offset="60%" stopColor="#0f172a" />
-                  <stop offset="100%" stopColor="#090d16" />
+                  {theme === 'neon' ? (
+                    <>
+                      <stop offset="0%" stopColor="#1e1b4b" />
+                      <stop offset="60%" stopColor="#0f172a" />
+                      <stop offset="100%" stopColor="#020617" />
+                    </>
+                  ) : theme === 'minimalist' ? (
+                    <>
+                      <stop offset="0%" stopColor="#18181b" />
+                      <stop offset="100%" stopColor="#090d16" />
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="#1e293b" />
+                      <stop offset="60%" stopColor="#0f172a" />
+                      <stop offset="100%" stopColor="#090d16" />
+                    </>
+                  )}
                 </linearGradient>
 
-                {/* Center 3D Gold Extruded Letters Gradient */}
+                {/* Center 3D Text Gradient */}
                 <linearGradient id="wfGold3DText" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="40%" stopColor="#fef08a" />
-                  <stop offset="80%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#b45309" />
+                  {theme === 'neon' ? (
+                    <>
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="50%" stopColor="#67e8f9" />
+                      <stop offset="100%" stopColor="#0284c7" />
+                    </>
+                  ) : theme === 'minimalist' ? (
+                    <>
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="100%" stopColor="#e2e8f0" />
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="40%" stopColor="#fef08a" />
+                      <stop offset="80%" stopColor="#f59e0b" />
+                      <stop offset="100%" stopColor="#b45309" />
+                    </>
+                  )}
                 </linearGradient>
 
                 {/* Rivet Peg Gradient */}
@@ -957,7 +1207,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                 className={`cursor-pointer transition-all duration-200 outline-none select-none ${
                   isSpinning
                     ? 'opacity-90'
-                    : 'hover:scale-105 active:scale-95 filter hover:brightness-110 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                    : 'filter hover:brightness-125 drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
                 }`}
                 transform={`translate(${cx}, ${cy})`}
               >
@@ -993,7 +1243,7 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   strokeWidth="1.5"
                 />
 
-                {/* Top Word: DAILY */}
+                {/* Top Word: USER NAME or DAILY */}
                 <text
                   x="0"
                   y="-11"
@@ -1003,12 +1253,12 @@ export const CircularWheelOfFortune: React.FC<CircularWheelOfFortuneProps> = ({
                   style={{
                     fontFamily: 'Outfit, sans-serif',
                     fontWeight: 800,
-                    fontSize: '13px',
-                    letterSpacing: '0.14em',
+                    fontSize: '12px',
+                    letterSpacing: '0.12em',
                     pointerEvents: 'none',
                   }}
                 >
-                  DAILY
+                  {profile?.userName ? profile.userName.toUpperCase().slice(0, 8) : 'DAILY'}
                 </text>
 
                 {/* Center Crest Divider */}

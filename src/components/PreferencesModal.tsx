@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check } from 'lucide-react';
+import { X, Check, Palette, Sparkles, Moon, Sun } from 'lucide-react';
 import { CategoryId, UserProfile } from '../types';
 import { CATEGORIES } from '../data/challenges';
 import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
@@ -10,6 +10,7 @@ interface PreferencesModalProps {
   onClose: () => void;
   profile: UserProfile;
   onUpdateFocusAreas: (areas: CategoryId[]) => void;
+  onUpdateWheelTheme: (theme: 'classic' | 'neon' | 'minimalist') => void;
   onToggleSound: (val: boolean) => void;
   onResetData: () => void;
 }
@@ -19,10 +20,13 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
   onClose,
   profile,
   onUpdateFocusAreas,
+  onUpdateWheelTheme,
   onToggleSound,
   onResetData,
 }) => {
   if (!isOpen) return null;
+
+  const currentTheme = profile.wheelTheme || 'classic';
 
   const categoryThemeMap: Record<string, RealisticIconTheme> = {
     health: 'emerald',
@@ -102,6 +106,76 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                 </button>
               );
             })}
+          </div>
+
+          {/* Wheel Visual Theme Selector */}
+          <div className="pt-4 border-t border-white/[0.07] mb-6">
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-slate-400 mb-3 flex items-center gap-2">
+              <Palette className="w-3.5 h-3.5 text-amber-400" />
+              <span>WHEEL VISUAL THEME</span>
+            </h4>
+
+            <div className="grid grid-cols-3 gap-2.5">
+              {/* Classic Gold Theme */}
+              <button
+                type="button"
+                onClick={() => onUpdateWheelTheme('classic')}
+                className={`relative p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                  currentTheme === 'classic'
+                    ? 'bg-amber-400/10 border-amber-400/60 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                    : 'bg-slate-950/60 border-white/[0.06] hover:border-white/[0.15]'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-yellow-200 border border-amber-300 shadow-sm" />
+                  {currentTheme === 'classic' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white font-display">Classic</div>
+                  <div className="text-[10px] text-slate-400 leading-tight">Machined Gold & Slate</div>
+                </div>
+              </button>
+
+              {/* Neon Cyberpunk Theme */}
+              <button
+                type="button"
+                onClick={() => onUpdateWheelTheme('neon')}
+                className={`relative p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                  currentTheme === 'neon'
+                    ? 'bg-cyan-500/10 border-cyan-400/70 shadow-[0_0_15px_rgba(6,182,212,0.25)]'
+                    : 'bg-slate-950/60 border-white/[0.06] hover:border-white/[0.15]'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-400 via-fuchsia-500 to-emerald-400 border border-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
+                  {currentTheme === 'neon' && <Check className="w-3.5 h-3.5 text-cyan-400" />}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-cyan-300 font-display">Neon</div>
+                  <div className="text-[10px] text-slate-400 leading-tight">Cyber Glow</div>
+                </div>
+              </button>
+
+              {/* Minimalist Theme */}
+              <button
+                type="button"
+                onClick={() => onUpdateWheelTheme('minimalist')}
+                className={`relative p-3 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                  currentTheme === 'minimalist'
+                    ? 'bg-slate-800/80 border-slate-300/60 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                    : 'bg-slate-950/60 border-white/[0.06] hover:border-white/[0.15]'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-zinc-900 via-slate-700 to-zinc-200 border border-slate-400" />
+                  {currentTheme === 'minimalist' && <Check className="w-3.5 h-3.5 text-slate-200" />}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-200 font-display">Minimalist</div>
+                  <div className="text-[10px] text-slate-400 leading-tight">Monochrome Obsidian</div>
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* Sound & Sensory Settings */}

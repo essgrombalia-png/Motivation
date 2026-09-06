@@ -101,4 +101,12 @@ export interface UserProfile {
   hapticsEnabled: boolean;
   todayOfficialPush: SelectedPush | null;
   todayOfficialCompleted: boolean;
+  // Personalized profile fields
+  userName?: string;
+  userAge?: number;
+  fitnessLevel?: 'beginner' | 'intermediate' | 'advanced' | 'beast';
+  occupation?: string;
+  personalGoal?: string;
+  onboardingCompleted?: boolean;
+  wheelTheme?: 'classic' | 'neon' | 'minimalist';
 }

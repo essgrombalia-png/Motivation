@@ -63,6 +63,7 @@ interface MotivationDeckProps {
   onOpenHistory: () => void;
   onOpenPreferences: () => void;
   onOpenMotivationEmergency: () => void;
+  onOpenProfile: () => void;
   onToggleSound: () => void;
 }
 
@@ -73,6 +74,7 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
   onOpenHistory,
   onOpenPreferences,
   onOpenMotivationEmergency,
+  onOpenProfile,
   onToggleSound,
 }) => {
   const [quoteIndex, setQuoteIndex] = useState(() =>
@@ -185,6 +187,18 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
 
           {/* Right: Quick Action Controls */}
           <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full lg:w-auto">
+            {/* User Profile Badge & Calibration Button */}
+            <button
+              onClick={onOpenProfile}
+              title="Personalize Profile & Calibration"
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 border border-amber-400/35 transition-all flex items-center gap-1.5 active:scale-98 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+            >
+              <RealisticIcon name="User" theme="gold" size="xs" />
+              <span className="text-xs font-bold truncate max-w-[90px] sm:max-w-[120px]">
+                {profile.userName || 'Profile'}
+              </span>
+            </button>
+
             {/* Focus Emergency Protocol */}
             <button
               onClick={onOpenMotivationEmergency}

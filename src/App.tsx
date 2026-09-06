@@ -30,6 +30,7 @@ import { StatsModal } from './components/StatsModal';
 import { AchievementsModal } from './components/AchievementsModal';
 import { HistoryModal } from './components/HistoryModal';
 import { PreferencesModal } from './components/PreferencesModal';
+import { UserProfileModal } from './components/UserProfileModal';
 import { MotivationEmergencyModal } from './components/MotivationEmergencyModal';
 import { MotivationDeck } from './components/MotivationDeck';
 import { PushNotificationOverlay } from './components/PushNotificationOverlay';
@@ -48,7 +49,15 @@ export default function App() {
   const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [motivationEmergencyOpen, setMotivationEmergencyOpen] = useState(false);
+
+  // Save profile updates from UserProfileModal
+  const handleSaveUserProfile = (updatedProfile: UserProfile) => {
+    setProfile(updatedProfile);
+    saveProfile(updatedProfile);
+    soundEngine.playLock(1);
+  };
 
   // Completion toast celebration
   const [celebration, setCelebration] = useState<{
@@ -222,6 +231,14 @@ export default function App() {
     saveProfile(updated);
   };
 
+  // Wheel theme update
+  const handleUpdateWheelTheme = (wheelTheme: 'classic' | 'neon' | 'minimalist') => {
+    const updated = { ...profile, wheelTheme };
+    setProfile(updated);
+    saveProfile(updated);
+    soundEngine.playLock(1);
+  };
+
   // Reset all data
   const handleResetData = () => {
     setProfile(DEFAULT_PROFILE);
@@ -256,6 +273,7 @@ export default function App() {
           onOpenAchievements={() => setAchievementsOpen(true)}
           onOpenHistory={() => setHistoryOpen(true)}
           onOpenPreferences={() => setPreferencesOpen(true)}
+          onOpenProfile={() => setProfileModalOpen(true)}
           onOpenMotivationEmergency={() => setMotivationEmergencyOpen(true)}
           onToggleSound={handleToggleSound}
         />
@@ -271,6 +289,7 @@ export default function App() {
                 setIsSpinning(spinning);
               }}
               preferredCategories={profile.focusAreas}
+              profile={profile}
             />
 
             {/* Floating Notification Card directly over the wheel */}
@@ -332,8 +351,16 @@ export default function App() {
         onClose={() => setPreferencesOpen(false)}
         profile={profile}
         onUpdateFocusAreas={handleUpdateFocusAreas}
+        onUpdateWheelTheme={handleUpdateWheelTheme}
         onToggleSound={handleToggleSound}
         onResetData={handleResetData}
+      />
+
+      <UserProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        profile={profile}
+        onSaveProfile={handleSaveUserProfile}
       />
 
       <MotivationEmergencyModal

@@ -76,6 +76,13 @@ export const DEFAULT_PROFILE: UserProfile = {
   hapticsEnabled: true,
   todayOfficialPush: null,
   todayOfficialCompleted: false,
+  userName: '',
+  userAge: undefined,
+  fitnessLevel: 'intermediate',
+  occupation: 'Discipline Seeker',
+  personalGoal: 'Master micro-habits and elevate daily focus',
+  onboardingCompleted: false,
+  wheelTheme: 'classic',
 };
 
 export function loadProfile(): UserProfile {
@@ -87,6 +94,13 @@ export function loadProfile(): UserProfile {
       ...DEFAULT_PROFILE,
       ...parsed,
       focusAreas: parsed.focusAreas || DEFAULT_PROFILE.focusAreas,
+      userName: parsed.userName ?? '',
+      userAge: parsed.userAge ?? undefined,
+      fitnessLevel: parsed.fitnessLevel || 'intermediate',
+      occupation: parsed.occupation || 'Discipline Seeker',
+      personalGoal: parsed.personalGoal || 'Master micro-habits and elevate daily focus',
+      onboardingCompleted: parsed.onboardingCompleted ?? Boolean(parsed.userName),
+      wheelTheme: parsed.wheelTheme || 'classic',
     };
   } catch {
     return DEFAULT_PROFILE;
