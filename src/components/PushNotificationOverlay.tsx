@@ -91,7 +91,7 @@ export const PushNotificationOverlay: React.FC<PushNotificationOverlayProps> = (
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-slate-950/70 backdrop-blur-md rounded-3xl"
+          className="absolute inset-0 bg-transparent rounded-3xl"
         />
 
         {/* Floating Notification Card */}
