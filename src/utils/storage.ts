@@ -83,6 +83,9 @@ export const DEFAULT_PROFILE: UserProfile = {
   personalGoal: 'Master micro-habits and elevate daily focus',
   onboardingCompleted: false,
   wheelTheme: 'classic',
+  reminderNotificationsEnabled: false,
+  reminderTime: '20:00',
+  lastNotificationDate: null,
 };
 
 export function loadProfile(): UserProfile {
@@ -101,6 +104,9 @@ export function loadProfile(): UserProfile {
       personalGoal: parsed.personalGoal || 'Master micro-habits and elevate daily focus',
       onboardingCompleted: parsed.onboardingCompleted ?? Boolean(parsed.userName),
       wheelTheme: parsed.wheelTheme || 'classic',
+      reminderNotificationsEnabled: parsed.reminderNotificationsEnabled ?? false,
+      reminderTime: parsed.reminderTime || '20:00',
+      lastNotificationDate: parsed.lastNotificationDate || null,
     };
   } catch {
     return DEFAULT_PROFILE;

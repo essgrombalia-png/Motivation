@@ -11,7 +11,9 @@ export type RealisticIconTheme =
   | 'titanium'
   | 'cyan'
   | 'rose'
-  | 'obsidian';
+  | 'obsidian'
+  | 'platinum'
+  | 'electric';
 
 export type RealisticIconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -113,6 +115,22 @@ const THEME_STYLES: Record<
     iconColor: 'text-amber-300',
     iconShadow: 'drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]',
     highlight: 'from-white/15 to-transparent',
+  },
+  platinum: {
+    container: 'bg-gradient-to-b from-[#ffffff] via-[#cbd5e1] to-[#64748b]',
+    border: 'border-white ring-1 ring-inset ring-white/60',
+    shadow: 'shadow-[0_4px_14px_rgba(255,255,255,0.25),0_1px_2px_rgba(0,0,0,0.8)]',
+    iconColor: 'text-[#020617]',
+    iconShadow: 'drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]',
+    highlight: 'from-white/50 to-transparent',
+  },
+  electric: {
+    container: 'bg-gradient-to-b from-[#fef08a] via-[#38bdf8] to-[#0284c7]',
+    border: 'border-[#e0f2fe]/70 ring-1 ring-inset ring-white/40',
+    shadow: 'shadow-[0_4px_14px_rgba(56,189,248,0.4),0_1px_2px_rgba(0,0,0,0.8)]',
+    iconColor: 'text-[#031d33]',
+    iconShadow: 'drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]',
+    highlight: 'from-white/40 to-transparent',
   },
 };
 

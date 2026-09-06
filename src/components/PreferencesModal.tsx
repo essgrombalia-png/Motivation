@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Palette, Sparkles, Moon, Sun } from 'lucide-react';
+import { X, Check, Palette, Sparkles, Moon, Sun, Bell, Clock, Send, AlertTriangle } from 'lucide-react';
 import { CategoryId, UserProfile } from '../types';
 import { CATEGORIES } from '../data/challenges';
 import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
+import {
+  getNotificationPermissionStatus,
+  requestNotificationPermission,
+  sendSampleNotification,
+} from '../utils/notifications';
 
 interface PreferencesModalProps {
   isOpen: boolean;
@@ -12,6 +17,8 @@ interface PreferencesModalProps {
   onUpdateFocusAreas: (areas: CategoryId[]) => void;
   onUpdateWheelTheme: (theme: 'classic' | 'neon' | 'minimalist') => void;
   onToggleSound: (val: boolean) => void;
+  onToggleReminderNotifications: (enabled: boolean) => void;
+  onUpdateReminderTime: (time: string) => void;
   onResetData: () => void;
 }
 
@@ -22,11 +29,34 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
   onUpdateFocusAreas,
   onUpdateWheelTheme,
   onToggleSound,
+  onToggleReminderNotifications,
+  onUpdateReminderTime,
   onResetData,
 }) => {
+  const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | 'unsupported'>(
+    getNotificationPermissionStatus()
+  );
+  const [testSent, setTestSent] = useState(false);
+
   if (!isOpen) return null;
 
   const currentTheme = profile.wheelTheme || 'classic';
+  const reminderEnabled = Boolean(profile.reminderNotificationsEnabled);
+  const reminderTime = profile.reminderTime || '20:00';
+
+  const handleRequestPermission = async () => {
+    const res = await requestNotificationPermission();
+    setPermissionStatus(res);
+    if (res === 'granted') {
+      onToggleReminderNotifications(true);
+    }
+  };
+
+  const handleTestNotification = () => {
+    const ok = sendSampleNotification();
+    setTestSent(true);
+    setTimeout(() => setTestSent(false), 3000);
+  };
 
   const categoryThemeMap: Record<string, RealisticIconTheme> = {
     health: 'emerald',
@@ -175,6 +205,122 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                   <div className="text-[10px] text-slate-400 leading-tight">Monochrome Obsidian</div>
                 </div>
               </button>
+            </div>
+          </div>
+
+          {/* Push Notification Daily Reminder Section */}
+          <div className="pt-4 border-t border-white/[0.07] mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.16em] text-slate-400 flex items-center gap-2">
+                <Bell className="w-3.5 h-3.5 text-amber-400" />
+                <span>DAILY SPIN PUSH REMINDERS</span>
+              </h4>
+
+              {/* Browser Permission Badge */}
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold uppercase ${
+                  permissionStatus === 'granted'
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                    : permissionStatus === 'denied'
+                    ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                    : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                }`}
+              >
+                {permissionStatus === 'granted'
+                  ? 'Permission Active'
+                  : permissionStatus === 'denied'
+                  ? 'Permission Blocked'
+                  : 'Permission Required'}
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-white/[0.08] flex flex-col gap-3.5">
+              {/* Toggle Switch */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <RealisticIcon
+                    name={reminderEnabled ? 'BellRing' : 'BellOff'}
+                    theme={reminderEnabled ? 'gold' : 'obsidian'}
+                    size="sm"
+                    glow={reminderEnabled}
+                  />
+                  <div>
+                    <div className="text-sm font-semibold text-white">Daily Spin Reminder</div>
+                    <div className="text-[11px] text-slate-400">
+                      Alerts you via browser push if you haven't spun today
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (permissionStatus !== 'granted') {
+                      handleRequestPermission();
+                    } else {
+                      onToggleReminderNotifications(!reminderEnabled);
+                    }
+                  }}
+                  className={`w-12 h-7 rounded-full transition-colors p-1 flex items-center ${
+                    reminderEnabled && permissionStatus === 'granted'
+                      ? 'bg-amber-400 justify-end'
+                      : 'bg-white/[0.1] justify-start'
+                  }`}
+                >
+                  <motion.div
+                    layout
+                    className={`w-5 h-5 rounded-full ${
+                      reminderEnabled && permissionStatus === 'granted' ? 'bg-slate-950' : 'bg-slate-400'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Time Picker & Control Actions */}
+              <div className="pt-3 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3">
+                {/* Time Input */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-xs font-semibold text-slate-300">Remind Me At:</span>
+                  <input
+                    type="time"
+                    value={reminderTime}
+                    onChange={(e) => onUpdateReminderTime(e.target.value)}
+                    className="bg-slate-900 border border-slate-700/80 text-amber-300 font-mono text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-amber-400 transition-colors cursor-pointer"
+                  />
+                </div>
+
+                {/* Request Permission or Test Button */}
+                <div className="flex items-center gap-2">
+                  {permissionStatus !== 'granted' ? (
+                    <button
+                      type="button"
+                      onClick={handleRequestPermission}
+                      className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 transition-all flex items-center gap-1.5"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      <span>Allow Notifications</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleTestNotification}
+                      disabled={testSent}
+                      className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/35 transition-all flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>{testSent ? 'Test Sent!' : 'Test Notification'}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {permissionStatus === 'denied' && (
+                <div className="text-[11px] text-rose-300/90 bg-rose-500/10 border border-rose-500/20 rounded-xl p-2.5 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span>Browser notifications are blocked in your site settings. Please click the lock icon in your address bar to allow notifications.</span>
+                </div>
+              )}
             </div>
           </div>
 

@@ -109,4 +109,8 @@ export interface UserProfile {
   personalGoal?: string;
   onboardingCompleted?: boolean;
   wheelTheme?: 'classic' | 'neon' | 'minimalist';
+  // Browser Notification settings
+  reminderNotificationsEnabled?: boolean;
+  reminderTime?: string; // HH:MM 24-hour format
+  lastNotificationDate?: string | null;
 }

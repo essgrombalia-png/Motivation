@@ -1,8 +1,8 @@
 import React from 'react';
-import { Flame, Trophy } from 'lucide-react';
 import { CircularWheelOfFortune } from './CircularWheelOfFortune';
 import { CategoryId, SelectedPush, UserProfile } from '../types';
 import { getTodayDateString } from '../utils/storage';
+import { RealisticIcon } from './RealisticIcon';
 
 interface WheelsContainerProps {
   onChallengeSelected: (push: SelectedPush) => void;
@@ -27,25 +27,9 @@ export const WheelsContainer: React.FC<WheelsContainerProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-2 sm:gap-3">
       {/* Visual Flame Streak Counter & Daily Engagement Indicator */}
-      <div className="flex items-center gap-2 sm:gap-3.5 bg-gradient-to-r from-slate-900/90 via-amber-950/40 to-slate-900/90 border border-amber-500/35 px-4 sm:px-5 py-2 rounded-full shadow-[0_4px_20px_rgba(245,158,11,0.18)] backdrop-blur-md z-20 transition-all duration-300 hover:border-amber-500/60 hover:shadow-[0_4px_25px_rgba(245,158,11,0.3)]">
+      <div className="flex items-center gap-2 sm:gap-3.5 bg-gradient-to-r from-slate-900/95 via-amber-950/50 to-slate-900/95 border border-amber-500/40 px-4 sm:px-5 py-2 rounded-full shadow-[0_4px_24px_rgba(245,158,11,0.2)] backdrop-blur-md z-20 transition-all duration-300 hover:border-amber-500/60 hover:shadow-[0_4px_30px_rgba(245,158,11,0.35)]">
         {/* Flame Icon with Dynamic Fire Glow */}
-        <div className="relative flex items-center justify-center shrink-0">
-          <div className="absolute inset-0 rounded-full bg-amber-500/35 blur-md animate-pulse" />
-          <div
-            className={`p-1.5 sm:p-2 rounded-full transition-transform duration-300 ${
-              currentStreak > 0
-                ? 'bg-gradient-to-tr from-amber-600 via-orange-500 to-yellow-400 text-slate-950 shadow-[0_0_14px_rgba(245,158,11,0.85)] scale-105'
-                : 'bg-slate-800 text-slate-400 border border-slate-700'
-            }`}
-          >
-            <Flame
-              className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                currentStreak > 0 ? 'fill-yellow-300 stroke-amber-950 animate-bounce' : ''
-              }`}
-              style={{ animationDuration: '2.2s' }}
-            />
-          </div>
-        </div>
+        <RealisticIcon name="Flame" theme={currentStreak > 0 ? "amber" : "obsidian"} size="sm" glow={currentStreak > 0} />
 
         {/* Streak Counter Text */}
         <div className="flex flex-col">
@@ -66,8 +50,8 @@ export const WheelsContainer: React.FC<WheelsContainerProps> = ({
         <div className="h-6 w-px bg-slate-800/80 mx-1 hidden sm:block" />
 
         {/* Best Streak Badge */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/70 border border-slate-700/60 text-xs">
-          <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs shadow-inner">
+          <RealisticIcon name="Trophy" theme="gold" size="xs" />
           <span className="text-slate-300 font-mono text-[11px] font-semibold">
             Best: <strong className="text-amber-300">{bestStreak}d</strong>
           </span>

@@ -15,6 +15,7 @@ import { UserProfile } from '../types';
 import { MOTIVATIONAL_QUOTES } from '../data/challenges';
 import { soundEngine } from '../utils/sound';
 import { RealisticIcon, RealisticIconTheme } from './RealisticIcon';
+import { ProLogo } from './ProLogo';
 
 interface TimeGreeting {
   title: string;
@@ -126,21 +127,12 @@ export const MotivationDeck: React.FC<MotivationDeckProps> = ({
           
           {/* Left: Branding & Core Player Metrics */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 w-full lg:w-auto">
-            {/* App Icon & Badge with Personalized Time Greeting */}
+            {/* Professional WebApp Logo & Dynamic Greeting */}
             <div className="flex items-center gap-3">
-              <RealisticIcon name={greeting.icon} theme={greeting.theme} size="sm" glow />
+              <ProLogo size="md" showSubtitle={false} />
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-display font-extrabold text-base text-white tracking-tight leading-none">
-                    DAILY PUSH
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-300 border border-amber-400/25 font-semibold tracking-wider">
-                    PRO
-                  </span>
-                </div>
-                {/* Dynamic Personalized Hour Greeting */}
-                <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium mt-0.5 text-amber-300/90">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-amber-300/90">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                   <span className="font-semibold text-white tracking-tight">{greeting.title}</span>
                   <span className="text-slate-600 hidden sm:inline">·</span>
                   <span className="text-slate-400 font-sans hidden sm:inline text-[10px]">{greeting.subtitle}</span>

@@ -24,6 +24,7 @@ import {
   getTodayDateString,
 } from './utils/storage';
 import { soundEngine } from './utils/sound';
+import { checkAndTriggerDailyReminder } from './utils/notifications';
 import { WheelsContainer } from './components/WheelsContainer';
 import { FocusTimerModal } from './components/FocusTimerModal';
 import { StatsModal } from './components/StatsModal';
@@ -239,6 +240,38 @@ export default function App() {
     soundEngine.playLock(1);
   };
 
+  // Toggle Reminder Notifications
+  const handleToggleReminderNotifications = (enabled: boolean) => {
+    const updated = { ...profile, reminderNotificationsEnabled: enabled };
+    setProfile(updated);
+    saveProfile(updated);
+    if (enabled) {
+      soundEngine.playLock(1);
+    }
+  };
+
+  // Update Reminder Time
+  const handleUpdateReminderTime = (time: string) => {
+    const updated = { ...profile, reminderTime: time };
+    setProfile(updated);
+    saveProfile(updated);
+    soundEngine.playTick(1.1);
+  };
+
+  // Background reminder checker interval
+  useEffect(() => {
+    const checkReminder = () => {
+      checkAndTriggerDailyReminder(profile, (updated) => {
+        setProfile(updated);
+        saveProfile(updated);
+      });
+    };
+
+    checkReminder();
+    const interval = setInterval(checkReminder, 30000); // check every 30s
+    return () => clearInterval(interval);
+  }, [profile]);
+
   // Reset all data
   const handleResetData = () => {
     setProfile(DEFAULT_PROFILE);
@@ -353,6 +386,8 @@ export default function App() {
         onUpdateFocusAreas={handleUpdateFocusAreas}
         onUpdateWheelTheme={handleUpdateWheelTheme}
         onToggleSound={handleToggleSound}
+        onToggleReminderNotifications={handleToggleReminderNotifications}
+        onUpdateReminderTime={handleUpdateReminderTime}
         onResetData={handleResetData}
       />
 
