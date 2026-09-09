@@ -1,21 +1,46 @@
 <!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daily Push — Interactive Roller Wheel Motivation & Habits</title>
-    <meta name="description" content="A modern, addictive, and inspiring motivation and self-improvement app built around interactive roller wheels." />
-    <meta property="og:title" content="Daily Push — Interactive Roller Wheel Motivation & Habits" />
-    <meta property="og:description" content="A modern, addictive, and inspiring motivation and self-improvement app built around interactive roller wheels." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-[#080b11] text-[#e5e9f0] antialiased selection:bg-amber-400/25 selection:text-amber-100 font-sans min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d6b57">
+  <meta name="description" content="Morgonhjulet – positiva budskap för medarbetare i Sigtuna kommun.">
+  <title>Morgonhjulet · Sigtuna kommun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <div><p class="eyebrow">MORGONHUSET</p><h1>Sigtuna kommun</h1></div>
+      <div class="date-chip" id="today" aria-label="Dagens datum"></div>
+    </header>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <span class="pill">☀️ En bra start på dagen</span>
+        <h2 id="page-title">Snurra hjulet.<br><em>Ta med dig energin.</em></h2>
+        <p>Tryck på hjulet när arbetsdagen börjar och få ett positivt budskap att bära med dig in i dagen.</p>
+      </div>
+      <div class="hero-note" aria-hidden="true"><span>08:00</span><small>redo för dagen</small></div>
+    </section>
+    <section class="game-grid" aria-label="Morgonhjulet">
+      <div class="wheel-area">
+        <div class="pointer" aria-hidden="true"></div>
+        <div class="wheel-wrap"><div class="wheel" id="wheel" role="button" tabindex="0" aria-label="Snurra motivationshjulet" aria-describedby="spin-help">
+          <div class="wheel-labels" id="wheelLabels" aria-hidden="true"></div>
+          <div class="wheel-center"><span>SNURRA</span><strong>✦</strong></div>
+        </div></div>
+        <p id="spin-help" class="spin-help">Tryck på hjulet eller knappen nedan</p>
+        <button class="spin-button" id="spinButton" type="button"><span>✦</span> Ge mig dagens budskap</button>
+      </div>
+      <aside class="message-card" aria-live="polite" aria-atomic="true">
+        <div class="card-top"><span>DAGENS BUDSKAP</span><span id="counter">01</span></div>
+        <div class="message-content" id="messageContent"><span class="quote-mark">“</span><p id="message">Du gör skillnad – en bra dag börjar med dig.</p><span class="message-author">Morgonhjulet</span></div>
+        <div class="card-footer"><span class="dot"></span><span id="status">Redo för en ny morgon.</span></div>
+      </aside>
+    </section>
+    <footer><span>Skapad för en positiv start tillsammans.</span><span>♥ Sigtuna kommun</span></footer>
+  </main>
+  <script src="script.js" defer></script>
+</body>
 </html>
-
